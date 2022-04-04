@@ -21,3 +21,11 @@ export const allergies = [
   { label: "Vegetarian", value: "vegetarian" },
   { label: "Wheat-Free", value: "wheat-free" },
 ];
+
+export const meal_type = [
+  { label: "Breakfast", value: "Breakfast" },
+  { label: "Dinner", value: "Dinner" },
+  { label: "Lunch", value: "Lunch" },
+  { label: "Snack", value: "Snack" },
+  { label: "Teatime", value: "Teatime" },
+];

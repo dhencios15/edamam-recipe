@@ -13,21 +13,30 @@ import {
 } from "@mantine/core";
 import { Check, ChevronDown, Search, X } from "tabler-icons-react";
 
-import { allergies, diets } from "@utils/constant";
+import { allergies, diets, meal_type } from "@utils/constant";
 import { isEmpty } from "lodash";
+import { useMediaQuery } from "@mantine/hooks";
 
 export const SearchRecipe = () => {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const [opened, setOpened] = React.useState(false);
   const [selectedDiets, setSelectedDiets] = React.useState<string[]>([]);
+  const [selectedMealType, setSelectedMealType] = React.useState<string[]>([]);
   const [selectedAllergies, setSelectedAllergies] = React.useState<string[]>(
     []
   );
 
-  const selectedFilters = selectedDiets.concat(selectedAllergies);
+  const selectedFilters = selectedDiets
+    .concat(selectedAllergies)
+    .concat(selectedMealType);
+
   const clearFilters = () => {
     setSelectedDiets([]);
     setSelectedAllergies([]);
+    setSelectedMealType([]);
   };
+
   return (
     <Group position='center' direction='column' spacing={1}>
       <TextInput
@@ -45,7 +54,7 @@ export const SearchRecipe = () => {
         closeOnClickOutside={false}
         withCloseButton
         transition='pop-top-left'
-        width={600}
+        width={isMobile ? 300 : 600}
         target={
           <Group spacing={5}>
             <Group
@@ -76,7 +85,10 @@ export const SearchRecipe = () => {
           </Group>
         }
       >
-        <SimpleGrid cols={2}>
+        <SimpleGrid
+          cols={2}
+          breakpoints={[{ maxWidth: "md", cols: 1, spacing: "md" }]}
+        >
           <CheckboxGroup
             color='green'
             orientation='horizontal'
@@ -106,6 +118,22 @@ export const SearchRecipe = () => {
                 key={allergy.value}
                 value={allergy.value}
                 label={allergy.label}
+              />
+            ))}
+          </CheckboxGroup>
+          <CheckboxGroup
+            color='green'
+            orientation='horizontal'
+            label='Meal type'
+            spacing='xs'
+            value={selectedMealType}
+            onChange={setSelectedMealType}
+          >
+            {meal_type.map((meal) => (
+              <Checkbox
+                key={meal.value}
+                value={meal.value}
+                label={meal.label}
               />
             ))}
           </CheckboxGroup>

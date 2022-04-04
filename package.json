@@ -12,11 +12,13 @@
     "@mantine/core": "^4.1.2",
     "@mantine/hooks": "^4.1.2",
     "@mantine/next": "^4.1.2",
+    "axios": "^0.26.1",
     "lodash": "^4.17.21",
     "next": "12.1.4",
     "nextjs-progressbar": "^0.0.14",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "react-query": "^3.34.19",
     "tabler-icons-react": "^1.43.0"
   },
   "devDependencies": {
