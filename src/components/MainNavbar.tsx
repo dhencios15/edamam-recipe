@@ -6,14 +6,12 @@ import {
   Group,
   Text,
   Menu,
-  Button,
   Paper,
   Title,
   Box,
   Image,
 } from "@mantine/core";
-import { Logout, Settings, ChevronDown, Egg } from "tabler-icons-react";
-import { NextLink } from "@mantine/next";
+import { Logout, Settings, ChevronDown } from "tabler-icons-react";
 import Link from "next/link";
 
 const useStyles = createStyles((theme) => ({

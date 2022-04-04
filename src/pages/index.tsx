@@ -1,8 +1,13 @@
-import { Text } from "@mantine/core";
+import React from "react";
 import type { NextPage } from "next";
+import { SearchRecipe } from "@components/home/SearchRecipe";
 
 const Home: NextPage = () => {
-  return <Text>HELLO</Text>;
+  return (
+    <>
+      <SearchRecipe />
+    </>
+  );
 };
 
 export default Home;
