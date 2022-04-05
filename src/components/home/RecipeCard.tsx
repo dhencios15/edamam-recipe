@@ -59,6 +59,12 @@ const useStyles = createStyles((theme) => ({
       textDecoration: "underline",
     },
   },
+
+  image_state: {
+    ":hover": {
+      opacity: 0.85,
+    },
+  },
 }));
 
 interface BadgeCardProps {
@@ -89,6 +95,9 @@ export function RecipeCard({ recipe }: BadgeCardProps) {
                 src={images?.REGULAR?.url}
                 alt={`${label}-image`}
                 height={images?.REGULAR.height}
+                classNames={{
+                  root: classes.image_state,
+                }}
               />
             )}
             <ActionIcon

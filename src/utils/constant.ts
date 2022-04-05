@@ -4,7 +4,7 @@ export const diets = [
   { label: "High-Protein", value: "high-protein" },
   { label: "Low-Carb", value: "low-carb" },
   { label: "Low-Fat", value: "Low-fat" },
-  { label: "low-Sodium", value: "low-sodium" },
+  { label: "Low-Sodium", value: "low-sodium" },
 ];
 
 export const allergies = [

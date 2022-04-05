@@ -23,7 +23,7 @@ export const Pagination = ({
           rightIcon={<ArrowDown size={20} />}
           color='green'
         >
-          FETCH MORE
+          {isFetching ? "FETCHING..." : "FETCH MORE"}
         </Button>
       </Group>
     </Center>

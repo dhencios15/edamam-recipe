@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import { validateToken } from "./jwt";
-import { prisma } from "./prisma";
+import prisma from "./prisma";
 
 export const apiPrisma = axios.create({
   baseURL: "http://localhost:3000/api",
