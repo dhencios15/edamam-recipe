@@ -29,7 +29,9 @@ const fields = [
 
 export const fetchRecipies = async ({ q, filters, cont }: Query) =>
   await api.get<Recipies>(`/v2?${fields.join("&")}&${filters}`, {
-    params: { q: q ?? "beef", _cont: cont ?? null },
+    params: {
+      q: q ?? "beef",
+    },
   });
 
 export const useRecipies = ({ q = "beef", filters = "", cont }: Query) =>

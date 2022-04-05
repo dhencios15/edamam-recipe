@@ -19,7 +19,7 @@ export default function App(props: AppProps) {
           queries: {
             staleTime: 1000 * 60 * 5,
             refetchOnWindowFocus: false,
-            retry: 2,
+            retry: 1,
           },
         },
       })
