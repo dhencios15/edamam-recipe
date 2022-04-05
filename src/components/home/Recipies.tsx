@@ -14,29 +14,11 @@ import {
   selectSearch,
   setNextPage,
 } from "./home.store/querySlice";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useInfiniteQuery } from "react-query";
 import type { Recipies as RecipiesType } from "@utils/types";
 import api from "@utils/api";
 import { SkeletonCard } from "./SkeletonCard";
-
-const fields = [
-  "field=label",
-  "field=images",
-  "field=source",
-  "field=dietLabels",
-  "field=url",
-  "field=healthLabels",
-  "field=ingredientLines",
-  "field=ingredients",
-  "field=calories",
-  "field=totalWeight",
-  "field=totalTime",
-  "field=cuisineType",
-  "field=mealType",
-  "field=dishType",
-  "field=cautions",
-  "field=uri",
-];
+import { fields } from "@utils/constant";
 
 const baseUrl = `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`;
 
@@ -65,11 +47,12 @@ export const Recipies = () => {
   );
 
   const lastUrl = infiniteQuery.data?.pageParams.pop() as string;
-  console.log(lastUrl);
-  const onNextPage = async () => {
+
+  const onNextPage = React.useCallback(async () => {
     dispatch(setNextPage(lastUrl));
     await infiniteQuery.fetchNextPage();
-  };
+    // eslint-disable-next-line
+  }, []);
 
   // React.useEffect(() => {
   //   let fetching = false;

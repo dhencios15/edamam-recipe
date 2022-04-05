@@ -29,3 +29,22 @@ export const meal_type = [
   { label: "Snack", value: "Snack" },
   { label: "Teatime", value: "Teatime" },
 ];
+
+export const fields = [
+  "field=label",
+  "field=images",
+  "field=source",
+  "field=dietLabels",
+  "field=url",
+  "field=healthLabels",
+  "field=ingredientLines",
+  "field=ingredients",
+  "field=calories",
+  "field=totalWeight",
+  "field=totalTime",
+  "field=cuisineType",
+  "field=mealType",
+  "field=dishType",
+  "field=cautions",
+  "field=uri",
+];

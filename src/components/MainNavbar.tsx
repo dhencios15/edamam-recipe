@@ -10,9 +10,15 @@ import {
   Title,
   Box,
   Image,
+  Avatar,
+  Button,
 } from "@mantine/core";
 import { Logout, Settings, ChevronDown } from "tabler-icons-react";
 import Link from "next/link";
+import { useGetMe } from "@hooks/auth/useAuth";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useQueryClient } from "react-query";
 
 const useStyles = createStyles((theme) => ({
   mainSection: {
@@ -20,18 +26,20 @@ const useStyles = createStyles((theme) => ({
   },
 
   user: {
-    color: theme.white,
+    color: theme.colorScheme === "dark" ? theme.colors.dark[0] : theme.black,
     padding: `${theme.spacing.xs}px ${theme.spacing.sm}px`,
     borderRadius: theme.radius.sm,
     transition: "background-color 100ms ease",
 
     "&:hover": {
-      backgroundColor: theme.colors.green[4],
+      backgroundColor:
+        theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
     },
   },
 
   userActive: {
-    backgroundColor: theme.colors.green[4],
+    backgroundColor:
+      theme.colorScheme === "dark" ? theme.colors.dark[8] : theme.white,
   },
 
   accountBtn: {
@@ -60,8 +68,47 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export function MainNavbar() {
+  const queryClient = useQueryClient();
   const { classes, cx } = useStyles();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const meQuery = useGetMe();
+  const router = useRouter();
+  const logout = async () => {
+    await axios.get("/api/signout");
+    router.push("/auth");
+    queryClient.removeQueries(["me"], { exact: true });
+  };
+
+  const renderAuthMenu = (
+    <Box>
+      {meQuery.data?.name ? (
+        <UnstyledButton
+          className={cx(classes.user, {
+            [classes.userActive]: userMenuOpened,
+          })}
+        >
+          <Group spacing={7}>
+            <Avatar
+              src='https://robohash.org/eda'
+              alt='user avatay'
+              radius='xl'
+              size={20}
+            />
+            <Text weight={500} size='sm' sx={{ lineHeight: 1 }} mr={3}>
+              {meQuery.data?.name}
+            </Text>
+            <ChevronDown size={12} />
+          </Group>
+        </UnstyledButton>
+      ) : (
+        <Link href='/auth' passHref>
+          <Button component='a' color='green'>
+            Login
+          </Button>
+        </Link>
+      )}
+    </Box>
+  );
 
   return (
     <Paper shadow='md' pt='sm'>
@@ -92,23 +139,12 @@ export function MainNavbar() {
             transition='pop-top-right'
             onClose={() => setUserMenuOpened(false)}
             onOpen={() => setUserMenuOpened(true)}
-            control={
-              <UnstyledButton
-                className={cx(classes.user, classes.accountBtn, {
-                  [classes.userActive]: userMenuOpened,
-                })}
-              >
-                <Group spacing={7}>
-                  <Text weight={500} size='sm' sx={{ lineHeight: 1 }} mr={3}>
-                    ACCOUNT
-                  </Text>
-                  <ChevronDown size={12} />
-                </Group>
-              </UnstyledButton>
-            }
+            control={renderAuthMenu}
           >
             <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
-            <Menu.Item icon={<Logout size={14} />}>Logout</Menu.Item>
+            <Menu.Item onClick={logout} icon={<Logout size={14} />}>
+              Logout
+            </Menu.Item>
           </Menu>
         </Group>
       </Container>
