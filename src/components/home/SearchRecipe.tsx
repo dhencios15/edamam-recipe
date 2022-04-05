@@ -1,6 +1,7 @@
 import React from "react";
 import {
   ActionIcon,
+  Box,
   Button,
   Checkbox,
   CheckboxGroup,
@@ -12,38 +13,93 @@ import {
   TextInput,
 } from "@mantine/core";
 import { Check, ChevronDown, Search, Trash, X } from "tabler-icons-react";
+import { useMediaQuery } from "@mantine/hooks";
+import { isEmpty } from "lodash";
 
 import { allergies, diets, meal_type } from "@utils/constant";
-import { isEmpty } from "lodash";
-import { useMediaQuery } from "@mantine/hooks";
+import { useAppDispatch } from "@redux-store/hooks";
+import { setFilter, setSearch } from "./home.store/querySlice";
+import { FilterTypes } from "@utils/types";
 
 export const SearchRecipe = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
+  const dispatch = useAppDispatch();
+
+  const [search, setStateSearch] = React.useState("");
   const [opened, setOpened] = React.useState(false);
   const [selectedDiets, setSelectedDiets] = React.useState<string[]>([]);
   const [selectedMealType, setSelectedMealType] = React.useState<string[]>([]);
-  const [selectedAllergies, setSelectedAllergies] = React.useState<string[]>(
-    []
-  );
+  const [selectedHealth, setSelectedHealth] = React.useState<string[]>([]);
 
   const selectedFilters = selectedDiets
-    .concat(selectedAllergies)
+    .concat(selectedHealth)
     .concat(selectedMealType);
 
-  const clearFilters = () => {
+  const onSearch = () => {
+    if (search) {
+      dispatch(setSearch(search));
+    }
+  };
+
+  const onFilter = () => {
+    let filters: FilterTypes = {
+      diet: [],
+      mealType: [],
+      health: [],
+    };
+
+    if (!isEmpty(selectedFilters)) {
+      filters.diet = selectedDiets;
+      filters.mealType = selectedMealType;
+      filters.health = selectedHealth;
+    }
+
+    dispatch(setFilter(filters));
+    setOpened(false);
+  };
+
+  const onClearSearch = () => {
+    // dispatch(setSearch(""));
+    setStateSearch("");
+  };
+
+  const onClearFilters = (push: boolean = true) => {
     setSelectedDiets([]);
-    setSelectedAllergies([]);
+    setSelectedHealth([]);
     setSelectedMealType([]);
+    push && dispatch(setFilter({ diet: [], health: [], mealType: [] }));
   };
 
   return (
     <Group position='center' direction='column' spacing={1}>
-      <TextInput
-        placeholder='Search Recipes'
-        rightSection={<Search size={20} />}
-        sx={{ width: 400 }}
-      />
+      <Box sx={{ display: "flex", alignItems: "center" }}>
+        <TextInput
+          placeholder='Search Recipes'
+          sx={{
+            width: 400,
+          }}
+          onKeyDown={(e) => e.key === "Enter" && onSearch()}
+          value={search}
+          onChange={(e) => setStateSearch(e.target.value)}
+          rightSection={
+            search && (
+              <ActionIcon onClick={onClearSearch}>
+                <X size={14} />
+              </ActionIcon>
+            )
+          }
+        />
+        <ActionIcon
+          size='lg'
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+          variant='filled'
+          color='blue'
+          onClick={onSearch}
+        >
+          <Search size={20} />
+        </ActionIcon>
+      </Box>
       <Popover
         opened={opened}
         onClose={() => setOpened(false)}
@@ -57,37 +113,41 @@ export const SearchRecipe = () => {
         width={isMobile ? 300 : 600}
         target={
           <Group spacing={5}>
-            <Group
-              onMouseEnter={() => setOpened(true)}
-              align='center'
-              spacing='xs'
-            >
+            <Group align='center' spacing='xs'>
               <Text weight={500} size='sm'>
                 REFINE SEARCH BY
               </Text>
-              <Group align='center' spacing={1}>
-                <Text
-                  sx={{ maxWidth: 150 }}
-                  transform='capitalize'
-                  lineClamp={1}
-                  weight={700}
-                >
-                  {selectedFilters.join(", ")}
-                </Text>
-                <ChevronDown size={18} />
+              <Group align='center' spacing={2}>
+                {isEmpty(selectedFilters) ? (
+                  <Text transform='capitalize' weight={700}>
+                    Diet, Meal Type, Health
+                  </Text>
+                ) : (
+                  <Text
+                    sx={{ maxWidth: 150 }}
+                    transform='capitalize'
+                    lineClamp={1}
+                    weight={700}
+                  >
+                    {selectedFilters.join(", ")}
+                  </Text>
+                )}
+                <ActionIcon onMouseEnter={() => setOpened(true)}>
+                  <ChevronDown color='green' size={18} />
+                </ActionIcon>
               </Group>
             </Group>
             {!isEmpty(selectedFilters) && (
-              <ActionIcon onClick={clearFilters} size='xs'>
+              <ActionIcon onClick={() => onClearFilters()} size='xs'>
                 <X size={14} />
               </ActionIcon>
             )}
           </Group>
         }
       >
-        <SimpleGrid
-          cols={2}
-          breakpoints={[{ maxWidth: "md", cols: 1, spacing: "md" }]}
+        <Group
+        // cols={2}
+        // breakpoints={[{ maxWidth: "md", cols: 1, spacing: "md" }]}
         >
           <CheckboxGroup
             color='green'
@@ -108,10 +168,10 @@ export const SearchRecipe = () => {
           <CheckboxGroup
             color='green'
             orientation='horizontal'
-            label='Allergies'
+            label='Health'
             spacing='xs'
-            value={selectedAllergies}
-            onChange={setSelectedAllergies}
+            value={selectedHealth}
+            onChange={setSelectedHealth}
           >
             {allergies.map((allergy) => (
               <Checkbox
@@ -137,7 +197,7 @@ export const SearchRecipe = () => {
               />
             ))}
           </CheckboxGroup>
-        </SimpleGrid>
+        </Group>
         <Space h='xl' />
         <Group position='apart' mt='xl'>
           <Button
@@ -146,7 +206,7 @@ export const SearchRecipe = () => {
             color='gray'
             size='xs'
             disabled={isEmpty(selectedFilters)}
-            onClick={clearFilters}
+            onClick={() => onClearFilters(false)}
           >
             CLEAR FILTER
           </Button>
@@ -154,7 +214,7 @@ export const SearchRecipe = () => {
             leftIcon={<Check size={16} />}
             color='green'
             size='xs'
-            onClick={() => setOpened(false)}
+            onClick={onFilter}
           >
             DONE
           </Button>

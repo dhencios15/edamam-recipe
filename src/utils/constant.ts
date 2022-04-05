@@ -9,7 +9,7 @@ export const diets = [
 
 export const allergies = [
   { label: "Alcohol-Free", value: "alcohol-free" },
-  { label: "Diary-Free", value: "diary-free" },
+  { label: "Dairy-Free", value: "dairy-free" },
   { label: "Egg-Free", value: "egg-free" },
   { label: "Fish-Free", value: "fish-free" },
   { label: "Kidney-Friendly", value: "kidney-friendly" },

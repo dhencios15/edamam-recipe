@@ -59,8 +59,6 @@ const useStyles = createStyles((theme) => ({
       textDecoration: "underline",
     },
   },
-
-  image_heart: { position: "absolute", top: 10, right: 10 },
 }));
 
 interface BadgeCardProps {
@@ -94,11 +92,11 @@ export function RecipeCard({ recipe }: BadgeCardProps) {
               />
             )}
             <ActionIcon
-              className={classes.image_heart}
+              sx={{ position: "absolute", left: 10, top: 10 }}
               color='red'
               variant='light'
             >
-              <Heart size='xl' />
+              <Heart size={20} />
             </ActionIcon>
           </Box>
         </Link>

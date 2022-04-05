@@ -7,9 +7,22 @@ import { RecipeCard } from "@components/home/RecipeCard";
 import { Pagination } from "./Pagination";
 import { isEmpty } from "lodash";
 import { getRecipeId } from "@utils/formatter";
+import { useAppSelector } from "@redux-store/hooks";
+import {
+  selectFilter,
+  selectNextPage,
+  selectSearch,
+} from "./home.store/querySlice";
 
 export const Recipies = () => {
-  const { data, isLoading, isError } = useRecipies({ q: "beef" });
+  const search = useAppSelector(selectSearch);
+  const filters = useAppSelector(selectFilter);
+  const cont = useAppSelector(selectNextPage);
+  const { data, isLoading, isError } = useRecipies({
+    q: search,
+    filters,
+    cont,
+  });
 
   if (isLoading) {
     return (
@@ -19,11 +32,11 @@ export const Recipies = () => {
     );
   }
 
-  if (isError) {
+  if (isError || isEmpty(data?.data.hits)) {
     return (
       <Center>
         <Text align='center' size='xl' color='red'>
-          No Recipies Found!
+          {isError ? "Something went wrong!" : "No Recipies Found!"}
         </Text>
       </Center>
     );
@@ -45,7 +58,7 @@ export const Recipies = () => {
             <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
           ))}
       </SimpleGrid>
-      <Pagination />
+      <Pagination url={data?.data?._links?.next?.href} />
     </>
   );
 };

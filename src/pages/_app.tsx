@@ -1,12 +1,14 @@
 import React from "react";
 import { MantineProvider } from "@mantine/core";
-import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
 import { ReactQueryDevtools } from "react-query/devtools";
+import { Provider } from "react-redux";
 
 import { Layout } from "@components/Layout";
+import { store } from "@redux-store/store";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -91,9 +93,11 @@ export default function App(props: AppProps) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <Provider store={store}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </Provider>
           <ReactQueryDevtools />
         </QueryClientProvider>
       </MantineProvider>

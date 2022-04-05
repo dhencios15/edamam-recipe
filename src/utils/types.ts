@@ -39,6 +39,8 @@ export type Paginate = {
 
 export type Recipies = Paginate & { hits: { recipe: Recipe }[] };
 
+export type Filters = "diet" | "mealType" | "health";
+export type FilterTypes = Record<Filters, string[]>;
 // "field=label",
 //   "field=images",
 //   "field=source",

@@ -20,7 +20,7 @@ const fields = [
 ];
 
 const api = axios.create({
-  baseURL: `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`,
+  baseURL: `https://api.edamam.com/api/recipes`,
   headers: {
     "Content-Type": "application/json",
   },
