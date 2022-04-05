@@ -14,6 +14,7 @@ export const Layout: React.FC = ({ children }) => {
       <Container py='lg' size={1300}>
         {children}
       </Container>
+      {/* <MainNavbar /> */}
     </Box>
   );
 };

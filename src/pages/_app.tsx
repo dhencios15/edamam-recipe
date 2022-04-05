@@ -1,12 +1,27 @@
+import React from "react";
+import { MantineProvider } from "@mantine/core";
+import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { AppProps } from "next/app";
 import Head from "next/head";
-import { MantineProvider } from "@mantine/core";
 import NextNProgress from "nextjs-progressbar";
-import { MainNavbar } from "@components/MainNavbar";
+import { ReactQueryDevtools } from "react-query/devtools";
+
 import { Layout } from "@components/Layout";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
+  const [queryClient] = React.useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5,
+            refetchOnWindowFocus: false,
+            retry: 2,
+          },
+        },
+      })
+  );
 
   return (
     <>
@@ -75,9 +90,12 @@ export default function App(props: AppProps) {
           },
         }}
       >
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <QueryClientProvider client={queryClient}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+          <ReactQueryDevtools />
+        </QueryClientProvider>
       </MantineProvider>
     </>
   );

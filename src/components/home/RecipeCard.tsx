@@ -1,17 +1,21 @@
 import React from "react";
-import { Heart } from "tabler-icons-react";
 import {
   Card,
-  Image,
   Text,
   Group,
   Badge,
-  Button,
-  ActionIcon,
   createStyles,
-  useMantineTheme,
+  Image,
+  Box,
+  ActionIcon,
+  Center,
 } from "@mantine/core";
+import { isEmpty } from "lodash";
 import Link from "next/link";
+import { Clock, Heart } from "tabler-icons-react";
+
+import type { Recipe } from "@utils/types";
+import { getRecipeId, toSlug } from "@utils/formatter";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -55,66 +59,101 @@ const useStyles = createStyles((theme) => ({
       textDecoration: "underline",
     },
   },
+
+  image_heart: { position: "absolute", top: 10, right: 10 },
 }));
 
 interface BadgeCardProps {
-  image: string;
-  title: string;
-  country: string;
-  description: string;
-  badges: {
-    emoji: string;
-    label: string;
-  }[];
+  recipe: Recipe;
 }
 
-export function RecipeCard({
-  image,
-  title,
-  description,
-  country,
-  badges,
-}: BadgeCardProps) {
+export function RecipeCard({ recipe }: BadgeCardProps) {
   const { classes } = useStyles();
-  const theme = useMantineTheme();
+  const {
+    images,
+    label,
+    source,
+    calories,
+    ingredientLines,
+    mealType,
+    totalTime,
+    url,
+    uri,
+  } = recipe;
 
   return (
     <Card withBorder radius='md' p='md' className={classes.card}>
       <Card.Section>
-        <Image src={image} alt={title} height={180} />
+        <Link href={`/${getRecipeId(uri)}?recipe=${toSlug(label)}`} passHref>
+          <Box component='a' sx={{ position: "relative" }}>
+            {!isEmpty(images?.REGULAR) && (
+              <Image
+                src={images?.REGULAR?.url}
+                alt={`${label}-image`}
+                height={images?.REGULAR.height}
+              />
+            )}
+            <ActionIcon
+              className={classes.image_heart}
+              color='red'
+              variant='light'
+            >
+              <Heart size='xl' />
+            </ActionIcon>
+          </Box>
+        </Link>
       </Card.Section>
 
       <Card.Section className={classes.section} mt='md'>
-        <Group position='apart'>
-          <div>
-            <Link href='/' passHref>
-              <Text
-                className={classes.title_link}
-                component='a'
-                size='lg'
-                weight={500}
+        <Group direction='column'>
+          <Group position='apart' sx={{ width: "100%" }}>
+            <div>
+              <Link
+                href={`/${getRecipeId(uri)}?recipe=${toSlug(label)}`}
+                passHref
               >
-                {title}
-              </Text>
-            </Link>
-            <Text size='xs' color='dimmed'>
-              By{" "}
-              <Link href='/' passHref>
                 <Text
-                  className={classes.source_link}
+                  className={classes.title_link}
                   component='a'
-                  target='_blank'
-                  size='xs'
-                  color='dimmed'
+                  size='lg'
+                  weight={500}
                 >
-                  BBC Good Food
+                  {label}
                 </Text>
               </Link>
-            </Text>
-          </div>
-          <Badge color='green' size='sm'>
-            lunch/dinner
-          </Badge>
+              <Text size='xs' color='dimmed'>
+                By{" "}
+                <Link href={url ?? "/"} passHref>
+                  <Text
+                    className={classes.source_link}
+                    component='a'
+                    target='_blank'
+                    size='xs'
+                    color='dimmed'
+                    transform='capitalize'
+                  >
+                    {source}
+                  </Text>
+                </Link>
+              </Text>
+            </div>
+            {Boolean(totalTime) && (
+              <Center>
+                <Clock size={18} />
+                <Text size='xs' ml={5}>
+                  {totalTime} mins
+                </Text>
+              </Center>
+            )}
+          </Group>
+          <Group spacing='xs'>
+            {!isEmpty(mealType) &&
+              mealType?.map((meal, idx) => (
+                <Badge key={idx} color='green' size='sm'>
+                  {meal}
+                </Badge>
+              ))}
+          </Group>
         </Group>
       </Card.Section>
 
@@ -123,7 +162,7 @@ export function RecipeCard({
           <div>
             <Text size='xs' color='dimmed'>
               <Text component='span' weight={500} size='sm'>
-                22
+                {calories?.toFixed()}
               </Text>{" "}
               CALORIES
             </Text>
@@ -131,7 +170,7 @@ export function RecipeCard({
           <div>
             <Text size='xs' color='dimmed'>
               <Text component='span' weight={500} size='sm'>
-                3
+                {ingredientLines?.length}
               </Text>{" "}
               INGREDIENTS
             </Text>

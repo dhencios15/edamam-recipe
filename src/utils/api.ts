@@ -16,6 +16,7 @@ const fields = [
   "field=mealType",
   "field=dishType",
   "field=cautions",
+  "field=uri",
 ];
 
 const api = axios.create({

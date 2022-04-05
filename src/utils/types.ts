@@ -27,6 +27,7 @@ export type Recipe = {
   mealType?: string[];
   dishType?: string[];
   cautions?: string[];
+  uri: string;
 };
 
 export type Paginate = {
@@ -36,7 +37,7 @@ export type Paginate = {
   _links?: Links;
 };
 
-export type FetchReturn = Paginate & { hits: { recipe: Recipe }[] };
+export type Recipies = Paginate & { hits: { recipe: Recipe }[] };
 
 // "field=label",
 //   "field=images",

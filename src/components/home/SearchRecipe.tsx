@@ -1,17 +1,17 @@
 import React from "react";
 import {
   ActionIcon,
-  Box,
   Button,
   Checkbox,
   CheckboxGroup,
   Group,
   Popover,
   SimpleGrid,
+  Space,
   Text,
   TextInput,
 } from "@mantine/core";
-import { Check, ChevronDown, Search, X } from "tabler-icons-react";
+import { Check, ChevronDown, Search, Trash, X } from "tabler-icons-react";
 
 import { allergies, diets, meal_type } from "@utils/constant";
 import { isEmpty } from "lodash";
@@ -138,17 +138,27 @@ export const SearchRecipe = () => {
             ))}
           </CheckboxGroup>
         </SimpleGrid>
-        <Box mt='lg' sx={{ display: "flex" }}>
+        <Space h='xl' />
+        <Group position='apart' mt='xl'>
+          <Button
+            variant='outline'
+            leftIcon={<Trash size={16} />}
+            color='gray'
+            size='xs'
+            disabled={isEmpty(selectedFilters)}
+            onClick={clearFilters}
+          >
+            CLEAR FILTER
+          </Button>
           <Button
             leftIcon={<Check size={16} />}
-            sx={{ marginLeft: "auto" }}
             color='green'
             size='xs'
             onClick={() => setOpened(false)}
           >
             DONE
           </Button>
-        </Box>
+        </Group>
       </Popover>
     </Group>
   );
