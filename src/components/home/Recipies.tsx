@@ -32,7 +32,7 @@ export const Recipies = () => {
   const fetchUrl = !isEmpty(nextUrl) ? nextUrl : `${baseUrl}&${filters}`;
 
   const infiniteQuery = useInfiniteQuery(
-    ["recipies", `${search}-${filters}`, nextUrl],
+    ["recipies", search, filters],
     async () =>
       await api.get<RecipiesType>(`${fetchUrl}`, {
         params: {
@@ -53,29 +53,6 @@ export const Recipies = () => {
     await infiniteQuery.fetchNextPage();
     // eslint-disable-next-line
   }, []);
-
-  // React.useEffect(() => {
-  //   let fetching = false;
-  //   const onScroll = async (event: any) => {
-  //     const { scrollHeight, scrollTop, clientHeight } =
-  //       event?.target?.scrollingElement;
-
-  //     if (!fetching && scrollHeight - scrollTop <= clientHeight * 2.5) {
-  //       fetching = true;
-  //       if (infiniteQuery.hasNextPage) {
-  //         dispatch(setNextPage(lastUrl));
-  //         await infiniteQuery.fetchNextPage();
-  //       }
-  //       fetching = false;
-  //     }
-  //   };
-
-  //   document.addEventListener("scroll", onScroll);
-  //   return () => {
-  //     document.removeEventListener("scroll", onScroll);
-  //   };
-  //   // eslint-disable-next-line
-  // }, []);
 
   if (infiniteQuery.isLoading) {
     return <SkeletonCard />;

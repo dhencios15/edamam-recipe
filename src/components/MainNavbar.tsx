@@ -12,6 +12,7 @@ import {
   Image,
   Avatar,
   Button,
+  Skeleton,
 } from "@mantine/core";
 import { Logout, Settings, ChevronDown } from "tabler-icons-react";
 import Link from "next/link";
@@ -19,6 +20,7 @@ import { useGetMe } from "@hooks/auth/useAuth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useQueryClient } from "react-query";
+import { isEmpty } from "lodash";
 
 const useStyles = createStyles((theme) => ({
   mainSection: {
@@ -81,7 +83,7 @@ export function MainNavbar() {
 
   const renderAuthMenu = (
     <Box>
-      {meQuery.data?.name ? (
+      {!isEmpty(meQuery.data) ? (
         <UnstyledButton
           className={cx(classes.user, {
             [classes.userActive]: userMenuOpened,

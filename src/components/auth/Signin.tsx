@@ -1,3 +1,5 @@
+import { useQueryClient } from "react-query";
+import React from "react";
 import {
   Button,
   Center,
@@ -9,7 +11,6 @@ import {
 import { useForm, zodResolver } from "@mantine/form";
 import { apiPrisma } from "@utils/auth";
 import { useRouter } from "next/router";
-import React from "react";
 import { z } from "zod";
 
 const schema = z.object({
@@ -20,6 +21,7 @@ const schema = z.object({
 export type SigninFormType = z.infer<typeof schema>;
 
 export const Signin = () => {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const form = useForm<SigninFormType>({
     schema: zodResolver(schema),
@@ -38,6 +40,7 @@ export const Signin = () => {
     try {
       await apiPrisma.post("/signin", { email, password });
       router.push("/");
+      queryClient.invalidateQueries(["me"]);
     } catch (error: any) {
       console.log(error.response.data.message);
       setError(error.response.data.message);
@@ -80,7 +83,7 @@ export const Signin = () => {
         id='password'
       />
       <Button loading={isLoading} type='submit' color='green' fullWidth mt='xl'>
-        Sign up
+        {isLoading ? "Signing in..." : "Sign in"}
       </Button>
     </Paper>
   );
