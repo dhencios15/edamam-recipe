@@ -58,37 +58,41 @@ export const Recipies = () => {
         },
       }),
     {
-      getNextPageParam: (lastPage, allPages) => {
-        console.log({ lastPage, allPages });
+      getNextPageParam: (lastPage) => {
         return lastPage.data._links?.next?.href ?? undefined;
       },
     }
   );
 
   const lastUrl = infiniteQuery.data?.pageParams.pop() as string;
+  console.log(lastUrl);
+  const onNextPage = async () => {
+    dispatch(setNextPage(lastUrl));
+    await infiniteQuery.fetchNextPage();
+  };
 
-  React.useEffect(() => {
-    let fetching = false;
-    const onScroll = async (event: any) => {
-      const { scrollHeight, scrollTop, clientHeight } =
-        event?.target?.scrollingElement;
+  // React.useEffect(() => {
+  //   let fetching = false;
+  //   const onScroll = async (event: any) => {
+  //     const { scrollHeight, scrollTop, clientHeight } =
+  //       event?.target?.scrollingElement;
 
-      if (!fetching && scrollHeight - scrollTop <= clientHeight * 1.5) {
-        fetching = true;
-        if (infiniteQuery.hasNextPage) {
-          await infiniteQuery.fetchNextPage();
-          dispatch(setNextPage(lastUrl ?? ""));
-        }
-        fetching = false;
-      }
-    };
+  //     if (!fetching && scrollHeight - scrollTop <= clientHeight * 2.5) {
+  //       fetching = true;
+  //       if (infiniteQuery.hasNextPage) {
+  //         dispatch(setNextPage(lastUrl));
+  //         await infiniteQuery.fetchNextPage();
+  //       }
+  //       fetching = false;
+  //     }
+  //   };
 
-    document.addEventListener("scroll", onScroll);
-    return () => {
-      document.removeEventListener("scroll", onScroll);
-    };
-    // eslint-disable-next-line
-  }, []);
+  //   document.addEventListener("scroll", onScroll);
+  //   return () => {
+  //     document.removeEventListener("scroll", onScroll);
+  //   };
+  //   // eslint-disable-next-line
+  // }, []);
 
   if (infiniteQuery.isLoading) {
     return <SkeletonCard />;
@@ -120,16 +124,18 @@ export const Recipies = () => {
           { maxWidth: "xs", cols: 1, spacing: "sm" },
         ]}
       >
-        {infiniteQuery.data?.pages.map(
-          (recipe) =>
-            !isEmpty(recipe.data?.hits) &&
-            recipe.data?.hits?.map(({ recipe }) => (
-              <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
-            ))
+        {infiniteQuery.data?.pages.map((hit_recipe) =>
+          hit_recipe.data?.hits?.map(({ recipe }) => (
+            <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
+          ))
         )}
       </SimpleGrid>
-      <SkeletonCard numOfCards={4} />
-      {/* <Pagination url={lastUrl} /> */}
+      {infiniteQuery.isFetching && <SkeletonCard numOfCards={4} />}
+      <Pagination
+        nextPage={onNextPage}
+        isFetching={infiniteQuery.isFetchingNextPage}
+        hasNextPage={infiniteQuery.hasNextPage}
+      />
     </>
   );
 };

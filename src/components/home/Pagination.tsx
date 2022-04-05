@@ -1,22 +1,29 @@
-import { Button, Center, Group } from "@mantine/core";
-import { useAppDispatch } from "@redux-store/hooks";
 import React from "react";
-import { ArrowLeft, ArrowRight } from "tabler-icons-react";
-import { setNextPage } from "./home.store/querySlice";
-import { getLinkHrefCountParam } from "@utils/formatter";
+import { Box, Button, Center, Group, Text } from "@mantine/core";
+import { ArrowDown } from "tabler-icons-react";
 
-export const Pagination = ({ url = "" }: { url?: string }) => {
-  const dispatch = useAppDispatch();
+interface Props {
+  nextPage: () => void;
+  hasNextPage?: boolean;
+  isFetching: boolean;
+}
 
+export const Pagination = ({
+  nextPage,
+  hasNextPage = false,
+  isFetching,
+}: Props) => {
   return (
     <Center mt='xl'>
-      <Group spacing='xl'>
+      <Group spacing='xs' direction='column' align='center'>
         <Button
-          onClick={() => dispatch(setNextPage(url ?? ""))}
-          rightIcon={<ArrowRight size={20} />}
+          onClick={nextPage}
+          disabled={!hasNextPage}
+          loading={isFetching}
+          rightIcon={<ArrowDown size={20} />}
           color='green'
         >
-          MORE
+          FETCH MORE
         </Button>
       </Group>
     </Center>
