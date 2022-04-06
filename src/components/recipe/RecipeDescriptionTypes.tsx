@@ -1,12 +1,13 @@
 import {
   Badge,
   Box,
+  DefaultMantineColor,
   Group,
   Paper,
-  SimpleGrid,
   Space,
   Text,
 } from "@mantine/core";
+import { isEmpty } from "lodash";
 import React from "react";
 
 interface Props {
@@ -15,55 +16,47 @@ interface Props {
   healthLabels?: string[];
 }
 
+const TypeCard = ({
+  title,
+  data,
+  color = "default",
+}: {
+  title: string;
+  data?: string[];
+  color?: DefaultMantineColor;
+}) => (
+  <Box>
+    <Text color='dimmed' size='xs' transform='uppercase' weight={700}>
+      {title}
+    </Text>
+    <Group mt='sm'>
+      {data?.map((type, idx) => (
+        <Badge color={color} key={idx}>
+          {type}
+        </Badge>
+      ))}
+    </Group>
+  </Box>
+);
+
 export const RecipeDescriptionTypes = ({
   cuisineType,
   dishType,
   healthLabels,
-}: Props) => {
-  return (
-    <Paper withBorder p='md' radius='md'>
-      {Boolean(cuisineType) && (
-        <Box>
-          <Text color='dimmed' size='xs' transform='uppercase' weight={700}>
-            CRUISINE TYPE
-          </Text>
-          <Group mt='sm'>
-            {cuisineType?.map((type, idx) => (
-              <Badge color='green' key={idx}>
-                {type}
-              </Badge>
-            ))}
-          </Group>
-        </Box>
-      )}
-      <Space h='xl' />
-      {Boolean(dishType) && (
-        <Box>
-          <Text color='dimmed' size='xs' transform='uppercase' weight={700}>
-            DISH TYPE
-          </Text>
-          <Group mt='sm'>
-            {dishType?.map((type, idx) => (
-              <Badge key={idx}>{type}</Badge>
-            ))}
-          </Group>
-        </Box>
-      )}
-      <Space h='xl' />
-      {Boolean(healthLabels) && (
-        <Box sx={{ maxWidth: "max-content" }}>
-          <Text color='dimmed' size='xs' transform='uppercase' weight={700}>
-            HEALTH
-          </Text>
-          <Group mt='sm'>
-            {healthLabels?.slice(0, 6).map((value, idx) => (
-              <Badge color='yellow' key={idx}>
-                {value}
-              </Badge>
-            ))}
-          </Group>
-        </Box>
-      )}
-    </Paper>
-  );
-};
+}: Props) => (
+  <Paper withBorder p='md' radius='md'>
+    {!isEmpty(cuisineType) && (
+      <TypeCard color='green' title='CRUISINE TYPE' data={cuisineType} />
+    )}
+    <Space h='xl' />
+    {!isEmpty(dishType) && <TypeCard title='DISH TYPE' data={dishType} />}
+    <Space h='xl' />
+    {!isEmpty(healthLabels) && (
+      <TypeCard
+        color='yellow'
+        title='HEALTH'
+        data={healthLabels?.slice(0, 6)}
+      />
+    )}
+  </Paper>
+);

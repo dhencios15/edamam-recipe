@@ -41,7 +41,6 @@ const RecipeSuggest = dynamic(
 interface Props {
   recipeId: string;
   recipe: RecipeType & { digest: DigestEnty[] };
-  error?: string;
 }
 
 const useStyles = createStyles((th) => ({
@@ -57,7 +56,7 @@ const useStyles = createStyles((th) => ({
   },
 }));
 
-export default function Recipe({ recipeId, recipe, error }: Props) {
+export default function Recipe({ recipeId, recipe }: Props) {
   const meQuery = useGetMe();
   const modals = useModals();
 

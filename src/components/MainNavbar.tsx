@@ -76,8 +76,10 @@ export function MainNavbar() {
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const meQuery = useGetMe();
   const router = useRouter();
+
+  const location = router.pathname === "/" ? "/" : router.asPath;
+
   const logout = async () => {
-    const location = router.pathname === "/" ? "/" : router.asPath;
     try {
       await axios.get("/api/signout");
       queryClient.removeQueries(["me"], { exact: true });
@@ -100,52 +102,77 @@ export function MainNavbar() {
     }
   };
 
-  const renderAuthMenu = !isEmpty(meQuery.data) ? (
-    <Menu
-      size={180}
-      placement='end'
-      transition='pop-top-right'
-      onClose={() => setUserMenuOpened(false)}
-      onOpen={() => setUserMenuOpened(true)}
-      control={
-        <UnstyledButton
-          className={cx(classes.user, {
-            [classes.userActive]: userMenuOpened,
-          })}
-        >
-          <Group spacing={7}>
-            <Avatar
-              src='https://robohash.org/eda'
-              alt='user avatay'
-              radius='xl'
-              size={20}
-            />
-            <Text
-              transform='capitalize'
-              weight={500}
-              size='sm'
-              sx={{ lineHeight: 1 }}
-              mr={3}
-            >
-              {meQuery.data?.name}
-            </Text>
-            <ChevronDown size={12} />
-          </Group>
-        </UnstyledButton>
+  React.useEffect(() => {
+    async function logoutError() {
+      try {
+        await axios.get("/api/signout");
+        queryClient.invalidateQueries(["me"], { exact: true });
+      } catch (error: any) {
+        console.log("error", error.response);
       }
-    >
-      <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
-      <Menu.Item onClick={logout} icon={<Logout size={14} />}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  ) : (
-    <Link href='/auth' passHref>
-      <Button component='a' color='green'>
-        Login
-      </Button>
-    </Link>
-  );
+    }
+    if (meQuery.isError) {
+      logoutError();
+
+      meQuery.error.message.split("code ")[1] === "401" &&
+        showNotification({
+          title: "Oh Noh! ⚠",
+          message: `Your Session Expired, Please login again`,
+          color: "red",
+        });
+    }
+
+    queryClient.removeQueries(["me"], { exact: true });
+    // eslint-disable-next-line
+  }, [meQuery.isError]);
+
+  const renderAuthMenu =
+    !isEmpty(meQuery.data) && !meQuery.isError ? (
+      <Menu
+        size={180}
+        placement='end'
+        transition='pop-top-right'
+        onClose={() => setUserMenuOpened(false)}
+        onOpen={() => setUserMenuOpened(true)}
+        control={
+          <UnstyledButton
+            className={cx(classes.user, {
+              [classes.userActive]: userMenuOpened,
+            })}
+          >
+            <Group spacing={7}>
+              <Avatar
+                src='https://robohash.org/eda'
+                alt='user avatay'
+                radius='xl'
+                size={20}
+              />
+              <Text
+                transform='capitalize'
+                weight={500}
+                size='sm'
+                sx={{ lineHeight: 1 }}
+                mr={3}
+              >
+                {meQuery.data?.name}
+              </Text>
+              <ChevronDown size={12} />
+            </Group>
+          </UnstyledButton>
+        }
+      >
+        <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
+        <Menu.Item onClick={logout} icon={<Logout size={14} />}>
+          Logout
+        </Menu.Item>
+      </Menu>
+    ) : (
+      <Link href='/auth' passHref>
+        <Button component='a' color='green'>
+          Login
+        </Button>
+      </Link>
+    );
 
   return (
     <Paper shadow='md' pt='sm'>
