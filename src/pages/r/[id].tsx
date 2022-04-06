@@ -14,6 +14,7 @@ import { showNotification } from "@mantine/notifications";
 import { isEmpty } from "lodash";
 import { Heart } from "tabler-icons-react";
 import dynamic from "next/dynamic";
+import { useModals } from "@mantine/modals";
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
@@ -58,6 +59,7 @@ const useStyles = createStyles((th) => ({
 
 export default function Recipe({ recipeId, recipe, error }: Props) {
   const meQuery = useGetMe();
+  const modals = useModals();
 
   const { classes } = useStyles();
   const {
@@ -110,6 +112,10 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
         color: "green",
       });
     } catch (error: any) {
+      modals.openContextModal("authmodal", {
+        title: `Ops ⚠! You need to sign in to access this feature`,
+        innerProps: {},
+      });
       console.log(error);
     }
   };

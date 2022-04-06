@@ -21,6 +21,7 @@ import axios from "axios";
 import { useRouter } from "next/router";
 import { useQueryClient } from "react-query";
 import { isEmpty } from "lodash";
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   mainSection: {
@@ -76,9 +77,27 @@ export function MainNavbar() {
   const meQuery = useGetMe();
   const router = useRouter();
   const logout = async () => {
-    await axios.get("/api/signout");
-    router.push("/auth");
-    queryClient.removeQueries(["me"], { exact: true });
+    const location = router.pathname === "/" ? "/" : router.asPath;
+    try {
+      await axios.get("/api/signout");
+      queryClient.removeQueries(["me"], { exact: true });
+
+      showNotification({
+        title: "BYE BYE 👋",
+        message: `Thanks for the visit`,
+        color: "green",
+        autoClose: 1000,
+      });
+    } catch (error) {
+      showNotification({
+        title: "Oh Noh! ⚠",
+        message: `Something went wrong`,
+        color: "red",
+      });
+    } finally {
+      router.push(location);
+      queryClient.invalidateQueries(["me"], { exact: true });
+    }
   };
 
   const renderAuthMenu = !isEmpty(meQuery.data) ? (
@@ -144,9 +163,9 @@ export function MainNavbar() {
                     fontStyle: "italic",
                   })}
                 >
-                  EDA
+                  EYA
                 </Text>
-                RECIPE
+                RECIPES
               </Title>
             </Box>
           </Link>

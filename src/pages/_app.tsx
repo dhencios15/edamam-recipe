@@ -11,6 +11,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@components/Layout";
 import { store } from "@redux-store/store";
+import { AuthModal } from "@components/auth/modal/AuthModal";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -30,7 +31,7 @@ export default function App(props: AppProps) {
   return (
     <>
       <Head>
-        <title>EDA Recipe</title>
+        <title>EYA Recipe</title>
         <meta
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'
@@ -95,7 +96,7 @@ export default function App(props: AppProps) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <ModalsProvider>
+          <ModalsProvider modals={{ authmodal: AuthModal }}>
             <NotificationsProvider position='top-center' limit={5}>
               <Provider store={store}>
                 <Layout>

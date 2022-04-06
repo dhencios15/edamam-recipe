@@ -12,6 +12,7 @@ import { useForm, zodResolver } from "@mantine/form";
 import { apiPrisma } from "@utils/auth";
 import { useRouter } from "next/router";
 import { z } from "zod";
+import { useModals } from "@mantine/modals";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email" }),
@@ -21,6 +22,8 @@ const schema = z.object({
 export type SigninFormType = z.infer<typeof schema>;
 
 export const Signin = () => {
+  const modals = useModals();
+
   const queryClient = useQueryClient();
   const router = useRouter();
   const form = useForm<SigninFormType>({
@@ -39,8 +42,10 @@ export const Signin = () => {
     setIsLoading(true);
     try {
       await apiPrisma.post("/signin", { email, password });
-      router.push("/");
+      const location = router.pathname === "/auth" ? "/" : router.asPath;
+      router.push(location);
       queryClient.invalidateQueries(["me"]);
+      modals.closeAll();
     } catch (error: any) {
       console.log(error.response.data.message);
       setError(error.response.data.message);

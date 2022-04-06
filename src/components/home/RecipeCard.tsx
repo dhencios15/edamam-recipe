@@ -19,6 +19,7 @@ import { getRecipeId, toSlug } from "@utils/formatter";
 import { useGetMe } from "@hooks/auth/useAuth";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { showNotification } from "@mantine/notifications";
+import { useModals } from "@mantine/modals";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -76,6 +77,8 @@ interface BadgeCardProps {
 }
 
 export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
+  const modals = useModals();
+
   const { classes } = useStyles();
   const {
     images,
@@ -114,6 +117,10 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
         color: "green",
       });
     } catch (error: any) {
+      modals.openContextModal("authmodal", {
+        title: `Ops ⚠! You need to sign in to access this feature`,
+        innerProps: {},
+      });
       console.log(error);
     }
   };
