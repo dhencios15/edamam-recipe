@@ -14,8 +14,10 @@ import { isEmpty } from "lodash";
 import Link from "next/link";
 import { Clock, Heart } from "tabler-icons-react";
 
-import type { Recipe } from "@utils/types";
+import type { FavoritCreateInput, Recipe } from "@utils/types";
 import { getRecipeId, toSlug } from "@utils/formatter";
+import { useGetMe } from "@hooks/auth/useAuth";
+import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -69,9 +71,10 @@ const useStyles = createStyles((theme) => ({
 
 interface BadgeCardProps {
   recipe: Recipe;
+  usersFavorites?: string[];
 }
 
-export function RecipeCard({ recipe }: BadgeCardProps) {
+export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
   const { classes } = useStyles();
   const {
     images,
@@ -82,33 +85,70 @@ export function RecipeCard({ recipe }: BadgeCardProps) {
     mealType,
     totalTime,
     url,
+    dishType,
     uri,
   } = recipe;
+
+  const favoriteMutate = useAddFavorites();
+  const favoriteRemoveMutate = useRemoveFavorites();
+
+  const isFavorite = usersFavorites?.includes(getRecipeId(uri) || "");
+
+  const onAddFavorite = () => {
+    const data: FavoritCreateInput = {
+      calories: Number(calories?.toFixed()) ?? 0,
+      image: images?.REGULAR?.url ?? "",
+      ingredientCount: ingredientLines?.length ?? 0,
+      label: label ?? "",
+      mealType: dishType?.pop() ?? "",
+      recipeId: getRecipeId(uri) ?? "",
+      source: source ?? "",
+      url: url ?? "",
+    };
+    try {
+      favoriteMutate.mutateAsync(data);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const onHandleFavoriteAction = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    isFavorite
+      ? favoriteRemoveMutate.mutate(getRecipeId(uri))
+      : onAddFavorite();
+  };
 
   return (
     <Card withBorder radius='md' p='md' className={classes.card}>
       <Card.Section>
-        <Link href={`/r/${getRecipeId(uri)}?recipe=${toSlug(label)}`} passHref>
-          <Box component='a' sx={{ position: "relative" }}>
-            {!isEmpty(images?.REGULAR) && (
-              <Image
-                src={images?.REGULAR?.url}
-                alt={`${label}-image`}
-                height={images?.REGULAR.height}
-                classNames={{
-                  root: classes.image_state,
-                }}
-              />
-            )}
-            <ActionIcon
-              sx={{ position: "absolute", left: 10, top: 10 }}
-              color='red'
-              variant='light'
-            >
-              <Heart size={20} />
-            </ActionIcon>
-          </Box>
-        </Link>
+        <Box sx={{ position: "relative" }}>
+          <Link
+            href={`/r/${getRecipeId(uri)}?recipe=${toSlug(label)}`}
+            passHref
+          >
+            <Box component='a'>
+              {!isEmpty(images?.REGULAR) && (
+                <Image
+                  src={images?.REGULAR?.url}
+                  alt={`${label}-image`}
+                  height={images?.REGULAR.height}
+                  classNames={{
+                    root: classes.image_state,
+                  }}
+                />
+              )}
+            </Box>
+          </Link>
+          <ActionIcon
+            sx={{ position: "absolute", left: 10, top: 10 }}
+            onClick={onHandleFavoriteAction}
+            color='red'
+            variant={isFavorite ? "filled" : "hover"}
+          >
+            <Heart size={20} />
+          </ActionIcon>
+        </Box>
       </Card.Section>
 
       <Card.Section className={classes.section} mt='md'>

@@ -13,7 +13,11 @@ import {
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
-import { DigestEnty, Recipe as RecipeType } from "@utils/types";
+import {
+  DigestEnty,
+  FavoritCreateInput,
+  Recipe as RecipeType,
+} from "@utils/types";
 
 import { MainBreadcrumbs } from "@components/MainBreadcrumbs";
 import { RecipeImage } from "@components/recipe/RecipeImage";
@@ -24,6 +28,9 @@ import { Heart } from "tabler-icons-react";
 import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
 import dynamic from "next/dynamic";
+import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
+import { getRecipeId } from "@utils/formatter";
+import { useGetMe } from "@hooks/auth/useAuth";
 
 const RecipeSuggest = dynamic(
   () => import("@components/recipe/RecipeSuggest"),
@@ -49,6 +56,8 @@ const useStyles = createStyles((th) => ({
 }));
 
 export default function Recipe({ recipeId, recipe, error }: Props) {
+  const meQuery = useGetMe();
+
   const { classes } = useStyles();
   const {
     label,
@@ -63,11 +72,47 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
     cuisineType,
     dishType,
     healthLabels,
+    uri,
   } = recipe;
   const links = [
     { title: "Home", href: "/" },
     { title: label || "", href: `/r/${recipeId}` },
   ];
+
+  const favoriteMutate = useAddFavorites();
+  const favoriteRemoveMutate = useRemoveFavorites();
+  const favorites = React.useMemo(() => {
+    if (!isEmpty(meQuery.data)) {
+      return meQuery.data?.favorites.map((favorite) => favorite.recipeId);
+    }
+    return [];
+  }, [meQuery.data]);
+
+  const isFavorite = favorites?.includes(getRecipeId(uri) || "");
+
+  const onAddFavorite = () => {
+    const data: FavoritCreateInput = {
+      calories: Number(calories?.toFixed()) ?? 0,
+      image: images?.REGULAR?.url ?? "",
+      ingredientCount: ingredientLines?.length ?? 0,
+      label: label ?? "",
+      mealType: dishType?.pop() ?? "",
+      recipeId: getRecipeId(uri) ?? "",
+      source: source ?? "",
+      url: url ?? "",
+    };
+    try {
+      favoriteMutate.mutateAsync(data);
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const onHandleFavoriteAction = () => {
+    isFavorite
+      ? favoriteRemoveMutate.mutate(getRecipeId(uri))
+      : onAddFavorite();
+  };
 
   return (
     <>
@@ -77,7 +122,11 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
         <Title align='center' className={classes.title}>
           {recipe.label}
         </Title>
-        <ActionIcon color='red' variant='hover'>
+        <ActionIcon
+          onClick={onHandleFavoriteAction}
+          color='red'
+          variant={isFavorite ? "filled" : "hover"}
+        >
           <Heart size={30} />
         </ActionIcon>
       </Group>
@@ -127,8 +176,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   } catch (error: any) {
     return {
-      props: {
-        error: "Recipe not Found",
+      redirect: {
+        destination: "/_error",
+        permanent: false,
       },
     };
   }

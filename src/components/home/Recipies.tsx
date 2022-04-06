@@ -18,15 +18,24 @@ import type { Recipies as RecipiesType } from "@utils/types";
 import { Pagination } from "./Pagination";
 import { SkeletonCard } from "./SkeletonCard";
 import { RecipeCard } from "@components/home/RecipeCard";
+import { useGetMe } from "@hooks/auth/useAuth";
 
 const baseUrl = `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`;
 
 export const Recipies = () => {
   const dispatch = useAppDispatch();
   const { ref, inView } = useInView();
+  const meQuery = useGetMe();
 
   const search = useAppSelector(selectSearch);
   const filters = useAppSelector(selectFilter);
+
+  const favorites = React.useMemo(() => {
+    if (!isEmpty(meQuery.data)) {
+      return meQuery.data?.favorites.map((favorite) => favorite.recipeId);
+    }
+    return [];
+  }, [meQuery.data]);
 
   const infiniteQuery = useInfiniteQuery(
     ["recipies", search, filters],
@@ -91,7 +100,11 @@ export const Recipies = () => {
       >
         {infiniteQuery.data?.pages.map((hit_recipe) =>
           hit_recipe?.hits?.map(({ recipe }) => (
-            <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
+            <RecipeCard
+              usersFavorites={favorites}
+              key={getRecipeId(recipe.uri)}
+              recipe={recipe}
+            />
           ))
         )}
       </SimpleGrid>

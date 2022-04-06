@@ -1,3 +1,5 @@
+import { Favorite } from "@prisma/client";
+
 export type ImageSizeTypes = "THUMBNAIL" | "SMALL" | "REGULAR" | "LARGE";
 export type ImageInfo = {
   url?: string;
@@ -55,3 +57,8 @@ export type DigestEnty = {
   unit?: string;
   sub?: Digest[];
 };
+
+export type FavoritCreateInput = Omit<
+  Favorite,
+  "id" | "User" | "createdAt" | "updatedAt"
+>;
