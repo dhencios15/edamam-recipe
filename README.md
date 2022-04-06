@@ -1,4 +1,4 @@
-## API/SERVER/DATABASE
+## API/SERVER/DATABASE 💾
 - [Edaman](https://www.edamam.com) - Recipe | Food | Nutrition Analysis API
 - [Prisma](https://www.prisma.io/) - Object–relational mapper (ORM)
 - [Sqlite](https://www.sqlite.org/) - SQL Database Engine
@@ -7,8 +7,8 @@
 
 - [Nextjs](https://nextjs.org/) - Reactjs Framework
 - [Mantine UI](https://mantine.dev/) - Reactjs UI Framework
-- [React Query](https://react-query.tanstack.com/) - React Fetching Libraray
-- [Redux Toolkit](https://redux-toolkit.js.org/) - Redux Library
+- [React Query](https://react-query.tanstack.com/) - React Fetching Libraray (Server State)
+- [Redux Toolkit](https://redux-toolkit.js.org/) - Redux Library (Client State)
 - [Typescript](https://www.typescriptlang.org/) - JavaScript with syntax for types
 ## TODO 📝
 
