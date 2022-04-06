@@ -4,8 +4,6 @@ import { Recipies } from "@utils/types";
 
 interface Query {
   q: string;
-  filters: string | null;
-  cont: string | null;
 }
 
 const fields = [
@@ -27,14 +25,16 @@ const fields = [
   "field=uri",
 ];
 
-export const fetchRecipies = async ({ q, filters, cont }: Query) =>
-  await api.get<Recipies>(`/v2?${fields.join("&")}&${filters}`, {
-    params: {
-      q: q ?? "beef",
-    },
-  });
+export const fetchRecipies = async ({ q }: Query) =>
+  await api
+    .get<Recipies>(`/v2?${fields.join("&")}`, {
+      params: {
+        q: q ?? "beef",
+      },
+    })
+    .then((res) => res.data);
 
-export const useRecipies = ({ q = "beef", filters = "", cont }: Query) =>
-  useQuery(["recipies", `${q}-${filters}`, cont], () =>
-    fetchRecipies({ q, filters, cont })
-  );
+export const useRecipies = ({ q = "beef" }: Query) =>
+  useQuery(["recipies", q], () => fetchRecipies({ q }), {
+    enabled: !!q,
+  });

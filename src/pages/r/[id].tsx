@@ -9,9 +9,6 @@ import {
   ActionIcon,
   SimpleGrid,
   Divider,
-  List,
-  CheckboxGroup,
-  Checkbox,
 } from "@mantine/core";
 
 import api from "@utils/api";
@@ -26,7 +23,12 @@ import { RecipeDescriptionTypes } from "@components/recipe/RecipeDescriptionType
 import { Heart } from "tabler-icons-react";
 import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
+import dynamic from "next/dynamic";
 
+const RecipeSuggest = dynamic(
+  () => import("@components/recipe/RecipeSuggest"),
+  { ssr: false }
+);
 interface Props {
   recipeId: string;
   recipe: RecipeType & { digest: DigestEnty[] };
@@ -66,7 +68,7 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
     { title: "Home", href: "/" },
     { title: label || "", href: `/r/${recipeId}` },
   ];
-  console.log(digest);
+
   return (
     <>
       <MainBreadcrumbs links={links} />
@@ -104,6 +106,7 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
         <RecipeIngredients ingredientLines={ingredientLines} />
         <RecipeNutritionFacts digest={digest} />
       </SimpleGrid>
+      <RecipeSuggest label={label} />
     </>
   );
 }
