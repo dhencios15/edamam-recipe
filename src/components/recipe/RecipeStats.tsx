@@ -20,7 +20,10 @@ export const RecipeStats = ({
     <SimpleGrid
       mx='auto'
       cols={4}
-      breakpoints={[{ maxWidth: "md", cols: 2, spacing: "md" }]}
+      breakpoints={[
+        { maxWidth: "md", cols: 2, spacing: "md" },
+        { maxWidth: "sm", cols: 1, spacing: "sm" },
+      ]}
     >
       {Boolean(totalTime) && (
         <RecipeStatCard

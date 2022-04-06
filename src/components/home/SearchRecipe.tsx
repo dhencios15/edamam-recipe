@@ -76,9 +76,12 @@ export const SearchRecipe = () => {
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <TextInput
           placeholder='Search Recipes'
-          sx={{
-            width: 400,
-          }}
+          sx={(th) => ({
+            width: 500,
+            [th.fn.smallerThan("sm")]: {
+              width: 250,
+            },
+          })}
           onKeyDown={(e) => e.key === "Enter" && onSearch()}
           value={search}
           onChange={(e) => setStateSearch(e.target.value)}
@@ -112,7 +115,7 @@ export const SearchRecipe = () => {
         transition='pop-top-left'
         width={isMobile ? 300 : 600}
         target={
-          <Group spacing={5}>
+          <Group align='center' position='center' spacing={5}>
             <Group align='center' spacing='xs'>
               <Text weight={500} size='sm'>
                 REFINE SEARCH BY
