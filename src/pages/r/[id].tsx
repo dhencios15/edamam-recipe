@@ -10,6 +10,10 @@ import {
   SimpleGrid,
   Divider,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { isEmpty } from "lodash";
+import { Heart } from "tabler-icons-react";
+import dynamic from "next/dynamic";
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
@@ -18,19 +22,16 @@ import {
   FavoritCreateInput,
   Recipe as RecipeType,
 } from "@utils/types";
+import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
+import { getRecipeId } from "@utils/formatter";
+import { useGetMe } from "@hooks/auth/useAuth";
 
 import { MainBreadcrumbs } from "@components/MainBreadcrumbs";
 import { RecipeImage } from "@components/recipe/RecipeImage";
 import { RecipeStats } from "@components/recipe/RecipeStats";
-import { isEmpty } from "lodash";
 import { RecipeDescriptionTypes } from "@components/recipe/RecipeDescriptionTypes";
-import { Heart } from "tabler-icons-react";
 import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
-import dynamic from "next/dynamic";
-import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
-import { getRecipeId } from "@utils/formatter";
-import { useGetMe } from "@hooks/auth/useAuth";
 
 const RecipeSuggest = dynamic(
   () => import("@components/recipe/RecipeSuggest"),
@@ -90,7 +91,7 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
 
   const isFavorite = favorites?.includes(getRecipeId(uri) || "");
 
-  const onAddFavorite = () => {
+  const onAddFavorite = async () => {
     const data: FavoritCreateInput = {
       calories: Number(calories?.toFixed()) ?? 0,
       image: images?.REGULAR?.url ?? "",
@@ -102,16 +103,31 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
       url: url ?? "",
     };
     try {
-      favoriteMutate.mutateAsync(data);
+      await favoriteMutate.mutateAsync(data);
+      showNotification({
+        title: "YEEY! 💖",
+        message: `${label} is now added to your favorites`,
+        color: "green",
+      });
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const onRemoveFavorites = async () => {
+    try {
+      await favoriteRemoveMutate.mutate(getRecipeId(uri));
+      showNotification({
+        title: "Awh! 💔",
+        message: `${label} is now removed to your favorites`,
+      });
     } catch (error: any) {
       console.log(error);
     }
   };
 
   const onHandleFavoriteAction = () => {
-    isFavorite
-      ? favoriteRemoveMutate.mutate(getRecipeId(uri))
-      : onAddFavorite();
+    isFavorite ? onRemoveFavorites() : onAddFavorite();
   };
 
   return (

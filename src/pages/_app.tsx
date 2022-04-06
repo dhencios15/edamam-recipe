@@ -6,6 +6,8 @@ import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { Provider } from "react-redux";
+import { ModalsProvider } from "@mantine/modals";
+import { NotificationsProvider } from "@mantine/notifications";
 
 import { Layout } from "@components/Layout";
 import { store } from "@redux-store/store";
@@ -17,7 +19,7 @@ export default function App(props: AppProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60 * 5,
+            staleTime: 1000 * 60 * 10,
             refetchOnWindowFocus: false,
             retry: 1,
           },
@@ -93,11 +95,15 @@ export default function App(props: AppProps) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <Provider store={store}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Provider>
+          <ModalsProvider>
+            <NotificationsProvider position='top-center' limit={5}>
+              <Provider store={store}>
+                <Layout>
+                  <Component {...pageProps} />
+                </Layout>
+              </Provider>
+            </NotificationsProvider>
+          </ModalsProvider>
           <ReactQueryDevtools />
         </QueryClientProvider>
       </MantineProvider>

@@ -18,6 +18,7 @@ import type { FavoritCreateInput, Recipe } from "@utils/types";
 import { getRecipeId, toSlug } from "@utils/formatter";
 import { useGetMe } from "@hooks/auth/useAuth";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
+import { showNotification } from "@mantine/notifications";
 
 const useStyles = createStyles((theme) => ({
   card: {
@@ -94,7 +95,7 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
 
   const isFavorite = usersFavorites?.includes(getRecipeId(uri) || "");
 
-  const onAddFavorite = () => {
+  const onAddFavorite = async () => {
     const data: FavoritCreateInput = {
       calories: Number(calories?.toFixed()) ?? 0,
       image: images?.REGULAR?.url ?? "",
@@ -106,7 +107,24 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
       url: url ?? "",
     };
     try {
-      favoriteMutate.mutateAsync(data);
+      await favoriteMutate.mutateAsync(data);
+      showNotification({
+        title: "YEEY! 💖",
+        message: `${label} is now added to your favorites`,
+        color: "green",
+      });
+    } catch (error: any) {
+      console.log(error);
+    }
+  };
+
+  const onRemoveFavorites = async () => {
+    try {
+      await favoriteRemoveMutate.mutate(getRecipeId(uri));
+      showNotification({
+        title: "Awh! 💔",
+        message: `${label} is now removed to your favorites`,
+      });
     } catch (error: any) {
       console.log(error);
     }
@@ -114,9 +132,7 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
 
   const onHandleFavoriteAction = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    isFavorite
-      ? favoriteRemoveMutate.mutate(getRecipeId(uri))
-      : onAddFavorite();
+    isFavorite ? onRemoveFavorites() : onAddFavorite();
   };
 
   return (
