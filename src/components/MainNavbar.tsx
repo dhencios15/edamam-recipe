@@ -81,9 +81,14 @@ export function MainNavbar() {
     queryClient.removeQueries(["me"], { exact: true });
   };
 
-  const renderAuthMenu = (
-    <Box>
-      {!isEmpty(meQuery.data) ? (
+  const renderAuthMenu = !isEmpty(meQuery.data) ? (
+    <Menu
+      size={180}
+      placement='end'
+      transition='pop-top-right'
+      onClose={() => setUserMenuOpened(false)}
+      onOpen={() => setUserMenuOpened(true)}
+      control={
         <UnstyledButton
           className={cx(classes.user, {
             [classes.userActive]: userMenuOpened,
@@ -108,14 +113,19 @@ export function MainNavbar() {
             <ChevronDown size={12} />
           </Group>
         </UnstyledButton>
-      ) : (
-        <Link href='/auth' passHref>
-          <Button component='a' color='green'>
-            Login
-          </Button>
-        </Link>
-      )}
-    </Box>
+      }
+    >
+      <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
+      <Menu.Item onClick={logout} icon={<Logout size={14} />}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  ) : (
+    <Link href='/auth' passHref>
+      <Button component='a' color='green'>
+        Login
+      </Button>
+    </Link>
   );
 
   return (
@@ -141,19 +151,7 @@ export function MainNavbar() {
             </Box>
           </Link>
 
-          <Menu
-            size={180}
-            placement='end'
-            transition='pop-top-right'
-            onClose={() => setUserMenuOpened(false)}
-            onOpen={() => setUserMenuOpened(true)}
-            control={renderAuthMenu}
-          >
-            <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
-            <Menu.Item onClick={logout} icon={<Logout size={14} />}>
-              Logout
-            </Menu.Item>
-          </Menu>
+          {renderAuthMenu}
         </Group>
       </Container>
     </Paper>

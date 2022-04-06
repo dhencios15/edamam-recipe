@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import cookie from "cookie";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from "@utils/prisma";
+import { prisma } from "@utils/prisma";
 import { COOKIE_OPTION, jwtSign, JWT_EDA_ACCESS_TOKEN } from "@utils/jwt";
 
 export default async function handle(
