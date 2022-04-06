@@ -1,24 +1,22 @@
 import React from "react";
-import { Box, Center, Loader, SimpleGrid, Text } from "@mantine/core";
-
-import { useRecipies } from "@hooks/useRecipies";
-
-import { RecipeCard } from "@components/home/RecipeCard";
-import { Pagination } from "./Pagination";
+import { useInfiniteQuery } from "react-query";
+import { Center, SimpleGrid, Text } from "@mantine/core";
 import { isEmpty } from "lodash";
-import { getRecipeId } from "@utils/formatter";
+
 import { useAppDispatch, useAppSelector } from "@redux-store/hooks";
 import {
   selectFilter,
-  selectNextPage,
   selectSearch,
   setNextPage,
 } from "./home.store/querySlice";
-import { useInfiniteQuery } from "react-query";
-import type { Recipies as RecipiesType } from "@utils/types";
 import api from "@utils/api";
-import { SkeletonCard } from "./SkeletonCard";
 import { fields } from "@utils/constant";
+import { getRecipeId } from "@utils/formatter";
+import type { Recipies as RecipiesType } from "@utils/types";
+
+import { Pagination } from "./Pagination";
+import { SkeletonCard } from "./SkeletonCard";
+import { RecipeCard } from "@components/home/RecipeCard";
 
 const baseUrl = `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`;
 
@@ -27,41 +25,39 @@ export const Recipies = () => {
 
   const search = useAppSelector(selectSearch);
   const filters = useAppSelector(selectFilter);
-  const nextUrl = useAppSelector(selectNextPage);
-
-  const fetchUrl = !isEmpty(nextUrl) ? nextUrl : `${baseUrl}&${filters}`;
 
   const infiniteQuery = useInfiniteQuery(
     ["recipies", search, filters],
-    async () =>
-      await api.get<RecipiesType>(`${fetchUrl}`, {
+    async ({ pageParam }) => {
+      const fetchUrl = !isEmpty(pageParam)
+        ? pageParam
+        : `${baseUrl}&${filters}`;
+      const res = await api.get<RecipiesType>(`${fetchUrl}`, {
         params: {
           q: search ?? "beef",
         },
-      }),
+      });
+      return res.data;
+    },
     {
-      getNextPageParam: (lastPage) => {
-        return lastPage.data._links?.next?.href ?? undefined;
-      },
+      getNextPageParam: (lastPage) => lastPage._links?.next?.href || undefined,
     }
   );
 
-  const lastUrl = infiniteQuery.data?.pageParams.pop() as string;
+  const lastUrl =
+    (infiniteQuery.data?.pageParams.pop() as string) ||
+    (infiniteQuery.data?.pages[0]._links?.next?.href as string);
 
-  const onNextPage = React.useCallback(async () => {
+  const onNextPage = async () => {
     dispatch(setNextPage(lastUrl));
     await infiniteQuery.fetchNextPage();
-    // eslint-disable-next-line
-  }, []);
+  };
 
   if (infiniteQuery.isLoading) {
     return <SkeletonCard />;
   }
 
-  if (
-    infiniteQuery.isError ||
-    isEmpty(infiniteQuery.data?.pages[0].data?.hits)
-  ) {
+  if (infiniteQuery.isError || isEmpty(infiniteQuery.data?.pages[0]?.hits)) {
     return (
       <Center>
         <Text align='center' size='xl' color='red'>
@@ -85,7 +81,7 @@ export const Recipies = () => {
         ]}
       >
         {infiniteQuery.data?.pages.map((hit_recipe) =>
-          hit_recipe.data?.hits?.map(({ recipe }) => (
+          hit_recipe?.hits?.map(({ recipe }) => (
             <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
           ))
         )}

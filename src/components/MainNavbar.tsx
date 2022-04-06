@@ -96,7 +96,13 @@ export function MainNavbar() {
               radius='xl'
               size={20}
             />
-            <Text weight={500} size='sm' sx={{ lineHeight: 1 }} mr={3}>
+            <Text
+              transform='capitalize'
+              weight={500}
+              size='sm'
+              sx={{ lineHeight: 1 }}
+              mr={3}
+            >
               {meQuery.data?.name}
             </Text>
             <ChevronDown size={12} />
