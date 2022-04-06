@@ -2,6 +2,7 @@ import React from "react";
 import { useInfiniteQuery } from "react-query";
 import { Center, SimpleGrid, Text } from "@mantine/core";
 import { isEmpty } from "lodash";
+import { useInView } from "react-intersection-observer";
 
 import { useAppDispatch, useAppSelector } from "@redux-store/hooks";
 import {
@@ -22,6 +23,7 @@ const baseUrl = `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`;
 
 export const Recipies = () => {
   const dispatch = useAppDispatch();
+  const { ref, inView } = useInView();
 
   const search = useAppSelector(selectSearch);
   const filters = useAppSelector(selectFilter);
@@ -43,6 +45,13 @@ export const Recipies = () => {
       getNextPageParam: (lastPage) => lastPage._links?.next?.href || undefined,
     }
   );
+
+  React.useEffect(() => {
+    if (inView && infiniteQuery.hasNextPage) {
+      infiniteQuery.fetchNextPage();
+    }
+    // eslint-disable-next-line
+  }, [inView, infiniteQuery.hasNextPage]);
 
   const lastUrl =
     (infiniteQuery.data?.pageParams.pop() as string) ||
@@ -88,6 +97,7 @@ export const Recipies = () => {
       </SimpleGrid>
       {infiniteQuery.isFetching && <SkeletonCard numOfCards={4} />}
       <Pagination
+        ref={ref}
         nextPage={onNextPage}
         isFetching={infiniteQuery.isFetchingNextPage}
         hasNextPage={infiniteQuery.hasNextPage}

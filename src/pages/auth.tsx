@@ -1,16 +1,5 @@
 import React from "react";
-import {
-  TextInput,
-  PasswordInput,
-  Checkbox,
-  Anchor,
-  Paper,
-  Title,
-  Text,
-  Container,
-  Group,
-  Button,
-} from "@mantine/core";
+import { Anchor, Text, Container } from "@mantine/core";
 import { Signin } from "@components/auth/Signin";
 import { Signup } from "@components/auth/Signup";
 

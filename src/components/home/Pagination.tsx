@@ -8,24 +8,48 @@ interface Props {
   isFetching: boolean;
 }
 
-export const Pagination = ({
-  nextPage,
-  hasNextPage = false,
-  isFetching,
-}: Props) => {
-  return (
-    <Center mt='xl'>
-      <Group spacing='xs' direction='column' align='center'>
-        <Button
-          onClick={nextPage}
-          disabled={!hasNextPage}
-          loading={isFetching}
-          rightIcon={<ArrowDown size={20} />}
-          color='green'
-        >
-          {isFetching ? "FETCHING..." : "FETCH MORE"}
-        </Button>
-      </Group>
-    </Center>
-  );
-};
+export type Ref = HTMLButtonElement;
+
+// eslint-disable-next-line
+export const Pagination = React.forwardRef<Ref, Props>(
+  ({ nextPage, hasNextPage = false, isFetching }, ref) => {
+    return (
+      <Center mt='xl'>
+        <Group spacing='xs' direction='column' align='center'>
+          <Button
+            ref={ref}
+            onClick={nextPage}
+            disabled={!hasNextPage}
+            loading={isFetching}
+            rightIcon={<ArrowDown size={20} />}
+            color='green'
+          >
+            {isFetching ? "FETCHING..." : "FETCH MORE"}
+          </Button>
+        </Group>
+      </Center>
+    );
+  }
+);
+
+// export const Pagination = React.forwardRef({
+//   nextPage,
+//   hasNextPage = false,
+//   isFetching,
+// }: Props) => {
+//   return (
+//     <Center mt='xl'>
+//       <Group spacing='xs' direction='column' align='center'>
+//         <Button
+//           onClick={nextPage}
+//           disabled={!hasNextPage}
+//           loading={isFetching}
+//           rightIcon={<ArrowDown size={20} />}
+//           color='green'
+//         >
+//           {isFetching ? "FETCHING..." : "FETCH MORE"}
+//         </Button>
+//       </Group>
+//     </Center>
+//   );
+// };

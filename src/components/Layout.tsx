@@ -1,5 +1,6 @@
 import { Box, Container } from "@mantine/core";
 import React from "react";
+import { MainFooter } from "./MainFooter";
 import { MainNavbar } from "./MainNavbar";
 
 export const Layout: React.FC = ({ children }) => {
@@ -14,7 +15,7 @@ export const Layout: React.FC = ({ children }) => {
       <Container py='lg' size={1300}>
         {children}
       </Container>
-      {/* <MainNavbar /> */}
+      <MainFooter />
     </Box>
   );
 };

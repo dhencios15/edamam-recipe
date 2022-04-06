@@ -24,6 +24,7 @@
     "nextjs-progressbar": "^0.0.14",
     "react": "18.0.0",
     "react-dom": "18.0.0",
+    "react-intersection-observer": "^8.33.1",
     "react-query": "^3.34.19",
     "react-redux": "^7.2.8",
     "tabler-icons-react": "^1.43.0",
