@@ -4,6 +4,7 @@ export type ImageInfo = {
   width?: number;
   height?: number;
 };
+export type ImageType = Record<ImageSizeTypes, ImageInfo>;
 export type Links = {
   self?: Link;
   next?: Link;
@@ -14,7 +15,7 @@ export type Link = {
 };
 export type Recipe = {
   label?: string;
-  images?: Record<ImageSizeTypes, ImageInfo>;
+  images?: ImageType;
   source?: string;
   url?: string;
   healthLabels?: string[];
@@ -41,3 +42,16 @@ export type Recipies = Paginate & { hits: { recipe: Recipe }[] };
 
 export type Filters = "diet" | "mealType" | "health";
 export type FilterTypes = Record<Filters, string[]>;
+
+export type Digest = DigestEnty;
+
+export type DigestEnty = {
+  label?: string;
+  tag?: string;
+  schemaOrgTag?: string;
+  total?: number;
+  hasRDI?: boolean;
+  daily?: number;
+  unit?: string;
+  sub?: Digest[];
+};

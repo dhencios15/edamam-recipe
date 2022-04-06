@@ -88,7 +88,7 @@ export function RecipeCard({ recipe }: BadgeCardProps) {
   return (
     <Card withBorder radius='md' p='md' className={classes.card}>
       <Card.Section>
-        <Link href={`/${getRecipeId(uri)}?recipe=${toSlug(label)}`} passHref>
+        <Link href={`/r/${getRecipeId(uri)}?recipe=${toSlug(label)}`} passHref>
           <Box component='a' sx={{ position: "relative" }}>
             {!isEmpty(images?.REGULAR) && (
               <Image
@@ -116,7 +116,7 @@ export function RecipeCard({ recipe }: BadgeCardProps) {
           <Group position='apart' sx={{ width: "100%" }}>
             <div>
               <Link
-                href={`/${getRecipeId(uri)}?recipe=${toSlug(label)}`}
+                href={`/r/${getRecipeId(uri)}?recipe=${toSlug(label)}`}
                 passHref
               >
                 <Text

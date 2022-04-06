@@ -1,24 +1,5 @@
 import axios from "axios";
 
-const fields = [
-  "field=label",
-  "field=images",
-  "field=source",
-  "field=dietLabels",
-  "field=url",
-  "field=healthLabels",
-  "field=ingredientLines",
-  "field=ingredients",
-  "field=calories",
-  "field=totalWeight",
-  "field=totalTime",
-  "field=cuisineType",
-  "field=mealType",
-  "field=dishType",
-  "field=cautions",
-  "field=uri",
-];
-
 const api = axios.create({
   baseURL: `https://api.edamam.com/api/recipes`,
   headers: {
