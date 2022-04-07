@@ -112,11 +112,13 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
     };
     try {
       await favoriteMutate.mutateAsync(data);
-      showNotification({
-        title: "YEEY! 💖",
-        message: `${label} is now added to your favorites`,
-        color: "green",
-      });
+      !favoriteMutate.isLoading &&
+        favoriteMutate.isSuccess &&
+        showNotification({
+          title: "YEEY! 💖",
+          message: `${label} is now added to your favorites`,
+          color: "green",
+        });
     } catch (error: any) {
       modals.openContextModal("authmodal", {
         title: `Ops ⚠! You need to sign in to access this feature`,
@@ -129,10 +131,12 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
   const onRemoveFavorites = async () => {
     try {
       await favoriteRemoveMutate.mutate(getRecipeId(uri));
-      showNotification({
-        title: "Awh! 💔",
-        message: `${label} is now removed to your favorites`,
-      });
+      !favoriteRemoveMutate.isLoading &&
+        favoriteRemoveMutate.isSuccess &&
+        showNotification({
+          title: "Awh! 💔",
+          message: `${label} is now removed to your favorites`,
+        });
     } catch (error: any) {
       console.log(error);
     }
@@ -142,6 +146,9 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
     e.stopPropagation();
     isFavorite ? onRemoveFavorites() : onAddFavorite();
   };
+
+  const favoriteMutateLoading =
+    favoriteMutate.isLoading || favoriteRemoveMutate.isLoading;
 
   return (
     <Card withBorder radius='md' p='md' className={classes.card}>
@@ -172,6 +179,7 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
             withArrow
           >
             <ActionIcon
+              loading={favoriteMutateLoading}
               onClick={onHandleFavoriteAction}
               color='red'
               variant={isFavorite ? "filled" : "hover"}

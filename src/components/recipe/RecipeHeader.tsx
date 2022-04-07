@@ -10,7 +10,8 @@ interface Props {
   recipe: Recipe & { digest: DigestEnty[] };
   isFavorite?: boolean;
   onHandleFavoriteAction: () => void;
-  user?: UserWithFavorite;
+  user?: UserWithFavorite | null;
+  isLoading: boolean;
 }
 
 export const RecipeHeader = ({
@@ -18,6 +19,7 @@ export const RecipeHeader = ({
   isFavorite,
   onHandleFavoriteAction,
   user,
+  isLoading,
 }: Props) => {
   const modals = useModals();
 
@@ -47,6 +49,7 @@ export const RecipeHeader = ({
         withArrow
       >
         <ActionIcon
+          loading={isLoading}
           onClick={onHandleFavoriteAction}
           color='red'
           variant={isFavorite ? "filled" : "hover"}

@@ -9,8 +9,9 @@ import { Provider } from "react-redux";
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
 
-import { Layout } from "@components/Layout";
 import { store } from "@redux-store/store";
+
+import { Layout } from "@components/Layout";
 import { AuthModal } from "@components/auth/modal/AuthModal";
 import { DownloadFilesModal } from "@components/modals/DownloadFilesModal";
 
@@ -32,7 +33,7 @@ export default function App(props: AppProps) {
   return (
     <>
       <Head>
-        <title>EYA Recipe</title>
+        <title>Eya Recipe</title>
         <meta
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'

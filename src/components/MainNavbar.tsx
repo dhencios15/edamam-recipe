@@ -12,16 +12,16 @@ import {
   Image,
   Avatar,
   Button,
-  Skeleton,
 } from "@mantine/core";
 import { Logout, Settings, ChevronDown } from "tabler-icons-react";
 import Link from "next/link";
-import { useGetMe } from "@hooks/auth/useAuth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useQueryClient } from "react-query";
-import { isEmpty } from "lodash";
 import { showNotification } from "@mantine/notifications";
+
+import { useAppDispatch, useAppSelector } from "@redux-store/hooks";
+import { clearUser, selectUser } from "@redux-store/authSlice";
 
 const useStyles = createStyles((theme) => ({
   mainSection: {
@@ -74,8 +74,9 @@ export function MainNavbar() {
   const queryClient = useQueryClient();
   const { classes, cx } = useStyles();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
-  const meQuery = useGetMe();
+  const user = useAppSelector(selectUser);
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const location = router.pathname === "/" ? "/" : router.asPath;
 
@@ -83,7 +84,7 @@ export function MainNavbar() {
     try {
       await axios.get("/api/signout");
       queryClient.removeQueries(["me"], { exact: true });
-
+      dispatch(clearUser());
       showNotification({
         title: "BYE BYE 👋",
         message: `Thanks for the visit`,
@@ -102,32 +103,8 @@ export function MainNavbar() {
     }
   };
 
-  React.useEffect(() => {
-    async function logoutError() {
-      try {
-        await axios.get("/api/signout");
-        queryClient.invalidateQueries(["me"], { exact: true });
-      } catch (error: any) {
-        console.log("error", error.response);
-      }
-    }
-    if (meQuery.isError) {
-      logoutError();
-
-      meQuery.error.message.split("code ")[1] === "401" &&
-        showNotification({
-          title: "Oh Noh! ⚠",
-          message: `Your Session Expired, Please login again`,
-          color: "red",
-        });
-    }
-
-    queryClient.removeQueries(["me"], { exact: true });
-    // eslint-disable-next-line
-  }, [meQuery.isError]);
-
-  const renderAuthMenu =
-    !isEmpty(meQuery.data) && !meQuery.isError ? (
+  const renderAuthMenu = React.useMemo(() => {
+    return Boolean(user) ? (
       <Menu
         size={180}
         placement='end'
@@ -154,7 +131,7 @@ export function MainNavbar() {
                 sx={{ lineHeight: 1 }}
                 mr={3}
               >
-                {meQuery.data?.name}
+                {user?.name}
               </Text>
               <ChevronDown size={12} />
             </Group>
@@ -173,6 +150,8 @@ export function MainNavbar() {
         </Button>
       </Link>
     );
+    // eslint-disable-next-line
+  }, [user]);
 
   return (
     <Paper shadow='md' pt='sm'>

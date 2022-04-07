@@ -1,15 +1,7 @@
 import React from "react";
 import { GetServerSideProps } from "next";
-import {
-  createStyles,
-  Space,
-  Group,
-  Stack,
-  SimpleGrid,
-  Divider,
-} from "@mantine/core";
+import { Space, Group, Stack, SimpleGrid, Divider } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { isEmpty } from "lodash";
 import dynamic from "next/dynamic";
 import { useModals } from "@mantine/modals";
 
@@ -22,7 +14,8 @@ import {
 } from "@utils/types";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { getRecipeId } from "@utils/formatter";
-import { useGetMe } from "@hooks/auth/useAuth";
+import { useAppSelector } from "@redux-store/hooks";
+import { selectUser } from "@redux-store/authSlice";
 
 import { MainBreadcrumbs } from "@components/MainBreadcrumbs";
 import { RecipeImage } from "@components/recipe/RecipeImage";
@@ -42,7 +35,7 @@ interface Props {
 }
 
 export default function Recipe({ recipeId, recipe }: Props) {
-  const meQuery = useGetMe();
+  const user = useAppSelector(selectUser);
   const modals = useModals();
 
   const {
@@ -68,11 +61,11 @@ export default function Recipe({ recipeId, recipe }: Props) {
   const favoriteMutate = useAddFavorites();
   const favoriteRemoveMutate = useRemoveFavorites();
   const favorites = React.useMemo(() => {
-    if (!isEmpty(meQuery.data)) {
-      return meQuery.data?.favorites.map((favorite) => favorite.recipeId);
+    if (Boolean(user)) {
+      return user?.favorites.map((favorite) => favorite.recipeId);
     }
     return [];
-  }, [meQuery.data]);
+  }, [user]);
 
   const isFavorite = favorites?.includes(getRecipeId(uri) || "");
 
@@ -89,11 +82,12 @@ export default function Recipe({ recipeId, recipe }: Props) {
     };
     try {
       await favoriteMutate.mutateAsync(data);
-      showNotification({
-        title: "YEEY! 💖",
-        message: `${label} is now added to your favorites`,
-        color: "green",
-      });
+      favoriteMutate.isSuccess &&
+        showNotification({
+          title: "YEEY! 💖",
+          message: `${label} is now added to your favorites`,
+          color: "green",
+        });
     } catch (error: any) {
       modals.openContextModal("authmodal", {
         title: `Ops ⚠! You need to sign in to access this feature`,
@@ -106,11 +100,12 @@ export default function Recipe({ recipeId, recipe }: Props) {
   const onRemoveFavorites = async () => {
     try {
       await favoriteRemoveMutate.mutate(getRecipeId(uri));
-      showNotification({
-        title: "Awh! 💔",
-        message: `${label} is now removed to your favorites`,
-        color: "red",
-      });
+      favoriteRemoveMutate.isSuccess &&
+        showNotification({
+          title: "Awh! 💔",
+          message: `${label} is now removed to your favorites`,
+          color: "red",
+        });
     } catch (error: any) {
       console.log(error);
     }
@@ -120,6 +115,9 @@ export default function Recipe({ recipeId, recipe }: Props) {
     isFavorite ? onRemoveFavorites() : onAddFavorite();
   };
 
+  const favoriteMutateLoading =
+    favoriteMutate.isLoading || favoriteRemoveMutate.isLoading;
+
   return (
     <>
       <MainBreadcrumbs links={links} />
@@ -128,7 +126,8 @@ export default function Recipe({ recipeId, recipe }: Props) {
         isFavorite={isFavorite}
         onHandleFavoriteAction={onHandleFavoriteAction}
         recipe={recipe}
-        user={meQuery.data}
+        user={user}
+        isLoading={favoriteMutateLoading}
       />
       <Space h='xl' />
       <Group align='start'>
