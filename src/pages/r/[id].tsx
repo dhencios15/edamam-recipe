@@ -12,9 +12,10 @@ import {
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { isEmpty } from "lodash";
-import { Heart } from "tabler-icons-react";
+import { FileDownload, Heart } from "tabler-icons-react";
 import dynamic from "next/dynamic";
 import { useModals } from "@mantine/modals";
+import { CSVLink } from "react-csv";
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
@@ -33,6 +34,7 @@ import { RecipeStats } from "@components/recipe/RecipeStats";
 import { RecipeDescriptionTypes } from "@components/recipe/RecipeDescriptionTypes";
 import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
+import { RecipeHeader } from "@components/recipe/RecipeHeader";
 
 const RecipeSuggest = dynamic(
   () => import("@components/recipe/RecipeSuggest"),
@@ -41,13 +43,9 @@ const RecipeSuggest = dynamic(
 interface Props {
   recipeId: string;
   recipe: RecipeType & { digest: DigestEnty[] };
-  error?: string;
 }
 
 const useStyles = createStyles((th) => ({
-  title: {
-    color: th.colors.green[7],
-  },
   image: {
     overflow: "hidden",
     maxHeight: 400,
@@ -57,11 +55,10 @@ const useStyles = createStyles((th) => ({
   },
 }));
 
-export default function Recipe({ recipeId, recipe, error }: Props) {
+export default function Recipe({ recipeId, recipe }: Props) {
   const meQuery = useGetMe();
   const modals = useModals();
 
-  const { classes } = useStyles();
   const {
     label,
     images,
@@ -99,7 +96,7 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
       image: images?.REGULAR?.url ?? "",
       ingredientCount: ingredientLines?.length ?? 0,
       label: label ?? "",
-      mealType: dishType?.pop() ?? "",
+      mealType: dishType ? dishType[0] : "",
       recipeId: getRecipeId(uri) ?? "",
       source: source ?? "",
       url: url ?? "",
@@ -126,6 +123,7 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
       showNotification({
         title: "Awh! 💔",
         message: `${label} is now removed to your favorites`,
+        color: "red",
       });
     } catch (error: any) {
       console.log(error);
@@ -140,18 +138,12 @@ export default function Recipe({ recipeId, recipe, error }: Props) {
     <>
       <MainBreadcrumbs links={links} />
       <Space h='xl' />
-      <Group align='center' position='center'>
-        <Title align='center' className={classes.title}>
-          {recipe.label}
-        </Title>
-        <ActionIcon
-          onClick={onHandleFavoriteAction}
-          color='red'
-          variant={isFavorite ? "filled" : "hover"}
-        >
-          <Heart size={30} />
-        </ActionIcon>
-      </Group>
+      <RecipeHeader
+        isFavorite={isFavorite}
+        onHandleFavoriteAction={onHandleFavoriteAction}
+        recipe={recipe}
+        user={meQuery.data}
+      />
       <Space h='xl' />
       <Group align='start'>
         <RecipeImage images={images} label={label} source={source} url={url} />

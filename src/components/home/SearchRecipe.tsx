@@ -7,7 +7,6 @@ import {
   CheckboxGroup,
   Group,
   Popover,
-  SimpleGrid,
   Space,
   Text,
   TextInput,

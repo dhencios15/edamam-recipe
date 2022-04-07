@@ -12,6 +12,7 @@ import { NotificationsProvider } from "@mantine/notifications";
 import { Layout } from "@components/Layout";
 import { store } from "@redux-store/store";
 import { AuthModal } from "@components/auth/modal/AuthModal";
+import { DownloadFilesModal } from "@components/modals/DownloadFilesModal";
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -96,7 +97,10 @@ export default function App(props: AppProps) {
         }}
       >
         <QueryClientProvider client={queryClient}>
-          <ModalsProvider modals={{ authmodal: AuthModal }}>
+          <ModalsProvider
+            // @ts-ignore
+            modals={{ authmodal: AuthModal, downloadmodal: DownloadFilesModal }}
+          >
             <NotificationsProvider position='top-center' limit={5}>
               <Provider store={store}>
                 <Layout>

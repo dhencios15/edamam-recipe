@@ -19,7 +19,7 @@
 - [x] - Create a page to view other details of a specific recipe.
 - [x] - Create reusable components for your application.
 - [x] - Create logout functionality.
-- [ ] - Create export data functionality, CSV, and PDF.
+- [x] - Create export data functionality, CSV, and PDF.
 - [x] - Add favorite functionality and add the data to your database and this data can be retrieved by the user. Users should also be able to unfavorite this item.
 - [x] - You can use third-party libraries for state management (e.g Redux) or use useContext.
 - [ ] - Create an admin feature.

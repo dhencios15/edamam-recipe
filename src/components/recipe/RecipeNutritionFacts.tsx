@@ -1,12 +1,4 @@
-import {
-  Grid,
-  List,
-  ScrollArea,
-  Space,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Grid, List, ScrollArea, Stack, Text, Title } from "@mantine/core";
 import { DigestEnty } from "@utils/types";
 import { isEmpty } from "lodash";
 import React from "react";
