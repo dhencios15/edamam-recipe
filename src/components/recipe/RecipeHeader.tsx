@@ -42,26 +42,28 @@ export const RecipeHeader = ({
       <Title align='center' sx={(th) => ({ color: th.colors.green[7] })}>
         {recipe?.label}
       </Title>
-      <Tooltip
-        label={
-          isFavorite ? "Remove to my favorite list" : "Add to favorite list"
-        }
-        withArrow
-      >
-        <ActionIcon
-          loading={isLoading}
-          onClick={onHandleFavoriteAction}
-          color='red'
-          variant={isFavorite ? "filled" : "hover"}
+      <Group>
+        <Tooltip
+          label={
+            isFavorite ? "Remove to my favorite list" : "Add to favorite list"
+          }
+          withArrow
         >
-          <Heart size={30} />
-        </ActionIcon>
-      </Tooltip>
-      <Tooltip label='Download (CSV or PDF)' withArrow>
-        <ActionIcon color='blue' onClick={onOpenDownloadModal}>
-          <FileDownload size={30} />
-        </ActionIcon>
-      </Tooltip>
+          <ActionIcon
+            loading={isLoading}
+            onClick={onHandleFavoriteAction}
+            color='red'
+            variant={isFavorite ? "filled" : "hover"}
+          >
+            <Heart size={30} />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label='Download (CSV or PDF)' withArrow>
+          <ActionIcon color='blue' onClick={onOpenDownloadModal}>
+            <FileDownload size={30} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
     </Group>
   );
 };

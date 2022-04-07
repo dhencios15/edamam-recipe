@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from "react-query";
-import { apiPrisma } from "@utils/auth";
 import { FavoritCreateInput } from "@utils/types";
 import axios from "axios";
 

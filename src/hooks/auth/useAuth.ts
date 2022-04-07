@@ -1,5 +1,4 @@
 import { Favorite, User } from "@prisma/client";
-import { apiPrisma } from "@utils/auth";
 import axios from "axios";
 import { useQuery } from "react-query";
 

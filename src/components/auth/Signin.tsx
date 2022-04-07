@@ -9,7 +9,6 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
-import { apiPrisma } from "@utils/auth";
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { useModals } from "@mantine/modals";

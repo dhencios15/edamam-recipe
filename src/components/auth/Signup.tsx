@@ -9,7 +9,6 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
-import { apiPrisma } from "@utils/auth";
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { useModals } from "@mantine/modals";
@@ -19,7 +18,9 @@ const schema = z
   .object({
     name: z.string().min(3, { message: "Name should have at least 3 letters" }),
     email: z.string().email({ message: "Invalid email" }),
-    password: z.string(),
+    password: z
+      .string()
+      .min(6, { message: "Password should have at least 6 letters" }),
     password_confirm: z.string(),
   })
   .refine((data) => data.password === data.password_confirm, {
