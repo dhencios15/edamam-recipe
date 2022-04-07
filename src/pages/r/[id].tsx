@@ -28,6 +28,7 @@ import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
 import { RecipeHeader } from "@components/recipe/RecipeHeader";
 import { useRecipe } from "@hooks/useRecipies";
+import { useRouter } from "next/router";
 
 const RecipeSuggest = dynamic(
   () => import("@components/recipe/RecipeSuggest"),
@@ -39,7 +40,8 @@ interface Props {
 
 export default function Recipe({ recipeId }: Props) {
   const user = useAppSelector(selectUser);
-  const { data: recipeData, isLoading } = useRecipe(recipeId);
+  const router = useRouter();
+  const { data: recipeData, isLoading, isError } = useRecipe(recipeId);
   const modals = useModals();
 
   const links = [
@@ -111,6 +113,10 @@ export default function Recipe({ recipeId }: Props) {
     return <SkeletonCard />;
   }
 
+  if (isError) {
+    router.push("/_error");
+  }
+
   return (
     <>
       <MainBreadcrumbs links={links} />
@@ -160,25 +166,31 @@ export default function Recipe({ recipeId }: Props) {
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context?.params?.id;
 
-  const fieldDisplay = [...fields, "field=digest"];
+  // const fieldDisplay = [...fields, "field=digest"];
 
-  try {
-    const response = await api.get(`/v2/${id}?${fieldDisplay.join("&")}`);
-    const recipeResult = await response.data;
-    return {
-      props: {
-        recipeId: id,
-        recipe: recipeResult.recipe,
-      },
-    };
-  } catch (error: any) {
-    return {
-      redirect: {
-        destination: "/_error",
-        permanent: false,
-      },
-    };
-  }
+  // try {
+  //   const response = await api.get(`/v2/${id}?${fieldDisplay.join("&")}`);
+  //   const recipeResult = await response.data;
+  //   return {
+  //     props: {
+  //       recipeId: id,
+  //       recipe: recipeResult.recipe,
+  //     },
+  //   };
+  // } catch (error: any) {
+  //   return {
+  //     redirect: {
+  //       destination: "/_error",
+  //       permanent: false,
+  //     },
+  //   };
+  // }
+
+  return {
+    props: {
+      recipeId: id,
+    },
+  };
 };
 
 function SkeletonCard() {
