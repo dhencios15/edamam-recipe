@@ -7,13 +7,12 @@ import {
   SimpleGrid,
   Divider,
   Skeleton,
+  Box,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import dynamic from "next/dynamic";
 import { useModals } from "@mantine/modals";
 
-import api from "@utils/api";
-import { fields } from "@utils/constant";
 import { FavoritCreateInput } from "@utils/types";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { getRecipeId } from "@utils/formatter";
@@ -46,9 +45,9 @@ export default function Recipe({ recipeId }: Props) {
 
   const links = [
     { title: "Home", href: "/" },
-    { title: recipeData?.label || "", href: `/r/${recipeId}` },
+    { title: recipeData?.recipe?.label || "", href: `/r/${recipeId}` },
   ];
-
+  console.log(recipeData?.recipe);
   const favoriteMutate = useAddFavorites();
   const favoriteRemoveMutate = useRemoveFavorites();
   const favorites = React.useMemo(() => {
@@ -58,25 +57,29 @@ export default function Recipe({ recipeId }: Props) {
     return [];
   }, [user]);
 
-  const isFavorite = favorites?.includes(getRecipeId(recipeData?.uri) || "");
+  const isFavorite = favorites?.includes(
+    getRecipeId(recipeData?.recipe?.uri) || ""
+  );
 
   const onAddFavorite = async () => {
     const data: FavoritCreateInput = {
-      calories: Number(recipeData?.calories?.toFixed()) ?? 0,
-      image: recipeData?.images?.REGULAR?.url ?? "",
-      ingredientCount: recipeData?.ingredientLines?.length ?? 0,
-      label: recipeData?.label ?? "",
-      mealType: recipeData?.dishType ? recipeData?.dishType[0] : "",
-      recipeId: getRecipeId(recipeData?.uri) ?? "",
-      source: recipeData?.source ?? "",
-      url: recipeData?.url ?? "",
+      calories: Number(recipeData?.recipe?.calories?.toFixed()) ?? 0,
+      image: recipeData?.recipe?.images?.REGULAR?.url ?? "",
+      ingredientCount: recipeData?.recipe?.ingredientLines?.length ?? 0,
+      label: recipeData?.recipe?.label ?? "",
+      mealType: recipeData?.recipe?.dishType
+        ? recipeData?.recipe?.dishType[0]
+        : "",
+      recipeId: getRecipeId(recipeData?.recipe?.uri) ?? "",
+      source: recipeData?.recipe?.source ?? "",
+      url: recipeData?.recipe?.url ?? "",
     };
     try {
       await favoriteMutate.mutateAsync(data);
       favoriteMutate.isSuccess &&
         showNotification({
           title: "YEEY! 💖",
-          message: `${recipeData?.label} is now added to your favorites`,
+          message: `${recipeData?.recipe?.label} is now added to your favorites`,
           color: "green",
         });
     } catch (error: any) {
@@ -90,11 +93,11 @@ export default function Recipe({ recipeId }: Props) {
 
   const onRemoveFavorites = async () => {
     try {
-      await favoriteRemoveMutate.mutate(getRecipeId(recipeData?.uri));
+      await favoriteRemoveMutate.mutate(getRecipeId(recipeData?.recipe?.uri));
       favoriteRemoveMutate.isSuccess &&
         showNotification({
           title: "Awh! 💔",
-          message: `${recipeData?.label} is now removed to your favorites`,
+          message: `${recipeData?.recipe?.label} is now removed to your favorites`,
           color: "red",
         });
     } catch (error: any) {
@@ -124,29 +127,29 @@ export default function Recipe({ recipeId }: Props) {
       <RecipeHeader
         isFavorite={isFavorite}
         onHandleFavoriteAction={onHandleFavoriteAction}
-        recipe={recipeData}
+        recipe={recipeData?.recipe}
         user={user}
         isLoading={favoriteMutateLoading}
       />
       <Space h='xl' />
       <Group align='start'>
         <RecipeImage
-          images={recipeData?.images}
-          label={recipeData?.label}
-          source={recipeData?.source}
-          url={recipeData?.url}
+          images={recipeData?.recipe?.images}
+          label={recipeData?.recipe?.label}
+          source={recipeData?.recipe?.source}
+          url={recipeData?.recipe?.url}
         />
         <Stack mx='auto'>
           <RecipeStats
-            ingredientLines={recipeData?.ingredientLines}
-            calories={recipeData?.calories}
-            totalTime={recipeData?.totalTime}
-            totalWeight={recipeData?.totalWeight}
+            ingredientLines={recipeData?.recipe?.ingredientLines}
+            calories={recipeData?.recipe?.calories}
+            totalTime={recipeData?.recipe?.totalTime}
+            totalWeight={recipeData?.recipe?.totalWeight}
           />
           <RecipeDescriptionTypes
-            cuisineType={recipeData?.cuisineType}
-            dishType={recipeData?.dishType}
-            healthLabels={recipeData?.healthLabels}
+            cuisineType={recipeData?.recipe?.cuisineType}
+            dishType={recipeData?.recipe?.dishType}
+            healthLabels={recipeData?.recipe?.healthLabels}
           />
         </Stack>
       </Group>
@@ -155,10 +158,12 @@ export default function Recipe({ recipeId }: Props) {
         breakpoints={[{ maxWidth: "md", cols: 1, spacing: "xl" }]}
         cols={2}
       >
-        <RecipeIngredients ingredientLines={recipeData?.ingredientLines} />
-        <RecipeNutritionFacts digest={recipeData?.digest} />
+        <RecipeIngredients
+          ingredientLines={recipeData?.recipe?.ingredientLines}
+        />
+        <RecipeNutritionFacts digest={recipeData?.recipe?.digest} />
       </SimpleGrid>
-      <RecipeSuggest label={recipeData?.label} />
+      <RecipeSuggest label={recipeData?.recipe?.label} />
     </>
   );
 }
@@ -196,10 +201,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 function SkeletonCard() {
   return (
     <>
-      <Skeleton height={100} width={100} mb='xl' />
-      <Skeleton height={8} radius='xl' />
-      <Skeleton height={8} mt={6} radius='xl' />
-      <Skeleton height={8} mt={6} width='70%' radius='xl' />
+      <Skeleton height={20} width='30%' mb='xl' />
+      <Skeleton visible={true}>
+        <Group>
+          <Box sx={{ height: 500, width: 350 }}></Box>
+        </Group>
+      </Skeleton>
+      <Skeleton height={100} mt='xl' />
     </>
   );
 }

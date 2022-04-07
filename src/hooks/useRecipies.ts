@@ -6,7 +6,9 @@ interface Query {
   q: string;
 }
 
-type RecipeType = Recipe & { digest: DigestEnty[] };
+type RecipeType = {
+  recipe: Recipe & { digest: DigestEnty[] };
+};
 
 const fields = [
   "field=label",
