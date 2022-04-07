@@ -4,7 +4,7 @@ export const getLinkHrefCountParam = (href: string = "") => {
   return getCount.split("_cont=")[1] || "";
 };
 
-export const getRecipeId = (href: string) => href.split("#recipe_")[1];
+export const getRecipeId = (href?: string) => href?.split("#recipe_")[1] || "";
 
 export const toSlug = (value?: string) =>
   value?.toLowerCase().split(" ").join("-");

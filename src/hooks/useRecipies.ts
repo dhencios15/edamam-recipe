@@ -1,10 +1,12 @@
 import { useQuery } from "react-query";
 import api from "@utils/api";
-import { Recipies } from "@utils/types";
+import { Recipies, Recipe, DigestEnty } from "@utils/types";
 
 interface Query {
   q: string;
 }
+
+type RecipeType = Recipe & { digest: DigestEnty[] };
 
 const fields = [
   "field=label",
@@ -25,6 +27,8 @@ const fields = [
   "field=uri",
 ];
 
+const fieldDisplay = [...fields, "field=digest"];
+
 export const fetchRecipies = async ({ q }: Query) =>
   await api
     .get<Recipies>(`/v2?${fields.join("&")}`, {
@@ -34,7 +38,15 @@ export const fetchRecipies = async ({ q }: Query) =>
     })
     .then((res) => res.data);
 
+export const fetchRecipe = async (id: string) =>
+  await api.get(`/v2/${id}?${fieldDisplay.join("&")}`).then((res) => res.data);
+
 export const useRecipies = ({ q = "beef" }: Query) =>
   useQuery(["recipies", q], () => fetchRecipies({ q }), {
     enabled: !!q,
+  });
+
+export const useRecipe = (id: string) =>
+  useQuery<RecipeType, Error>(["recipies", id], () => fetchRecipe(id), {
+    enabled: !!id,
   });

@@ -7,7 +7,7 @@ import { UserWithFavorite } from "@hooks/auth/useAuth";
 import { DigestEnty, Recipe } from "@utils/types";
 
 interface Props {
-  recipe: Recipe & { digest: DigestEnty[] };
+  recipe?: Recipe & { digest: DigestEnty[] };
   isFavorite?: boolean;
   onHandleFavoriteAction: () => void;
   user?: UserWithFavorite | null;
@@ -40,7 +40,7 @@ export const RecipeHeader = ({
   return (
     <Group align='center' position='center'>
       <Title align='center' sx={(th) => ({ color: th.colors.green[7] })}>
-        {recipe.label}
+        {recipe?.label}
       </Title>
       <Tooltip
         label={

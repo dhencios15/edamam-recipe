@@ -1,17 +1,20 @@
 import React from "react";
 import { GetServerSideProps } from "next";
-import { Space, Group, Stack, SimpleGrid, Divider } from "@mantine/core";
+import {
+  Space,
+  Group,
+  Stack,
+  SimpleGrid,
+  Divider,
+  Skeleton,
+} from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import dynamic from "next/dynamic";
 import { useModals } from "@mantine/modals";
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
-import {
-  DigestEnty,
-  FavoritCreateInput,
-  Recipe as RecipeType,
-} from "@utils/types";
+import { FavoritCreateInput } from "@utils/types";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { getRecipeId } from "@utils/formatter";
 import { useAppSelector } from "@redux-store/hooks";
@@ -24,6 +27,7 @@ import { RecipeDescriptionTypes } from "@components/recipe/RecipeDescriptionType
 import { RecipeIngredients } from "@components/recipe/RecipeIngredients";
 import { RecipeNutritionFacts } from "@components/recipe/RecipeNutritionFacts";
 import { RecipeHeader } from "@components/recipe/RecipeHeader";
+import { useRecipe } from "@hooks/useRecipies";
 
 const RecipeSuggest = dynamic(
   () => import("@components/recipe/RecipeSuggest"),
@@ -31,31 +35,16 @@ const RecipeSuggest = dynamic(
 );
 interface Props {
   recipeId: string;
-  recipe: RecipeType & { digest: DigestEnty[] };
 }
 
-export default function Recipe({ recipeId, recipe }: Props) {
+export default function Recipe({ recipeId }: Props) {
   const user = useAppSelector(selectUser);
+  const { data: recipeData, isLoading } = useRecipe(recipeId);
   const modals = useModals();
 
-  const {
-    label,
-    images,
-    source,
-    url,
-    totalTime,
-    totalWeight,
-    calories,
-    ingredientLines,
-    digest,
-    cuisineType,
-    dishType,
-    healthLabels,
-    uri,
-  } = recipe;
   const links = [
     { title: "Home", href: "/" },
-    { title: label || "", href: `/r/${recipeId}` },
+    { title: recipeData?.label || "", href: `/r/${recipeId}` },
   ];
 
   const favoriteMutate = useAddFavorites();
@@ -67,25 +56,25 @@ export default function Recipe({ recipeId, recipe }: Props) {
     return [];
   }, [user]);
 
-  const isFavorite = favorites?.includes(getRecipeId(uri) || "");
+  const isFavorite = favorites?.includes(getRecipeId(recipeData?.uri) || "");
 
   const onAddFavorite = async () => {
     const data: FavoritCreateInput = {
-      calories: Number(calories?.toFixed()) ?? 0,
-      image: images?.REGULAR?.url ?? "",
-      ingredientCount: ingredientLines?.length ?? 0,
-      label: label ?? "",
-      mealType: dishType ? dishType[0] : "",
-      recipeId: getRecipeId(uri) ?? "",
-      source: source ?? "",
-      url: url ?? "",
+      calories: Number(recipeData?.calories?.toFixed()) ?? 0,
+      image: recipeData?.images?.REGULAR?.url ?? "",
+      ingredientCount: recipeData?.ingredientLines?.length ?? 0,
+      label: recipeData?.label ?? "",
+      mealType: recipeData?.dishType ? recipeData?.dishType[0] : "",
+      recipeId: getRecipeId(recipeData?.uri) ?? "",
+      source: recipeData?.source ?? "",
+      url: recipeData?.url ?? "",
     };
     try {
       await favoriteMutate.mutateAsync(data);
       favoriteMutate.isSuccess &&
         showNotification({
           title: "YEEY! 💖",
-          message: `${label} is now added to your favorites`,
+          message: `${recipeData?.label} is now added to your favorites`,
           color: "green",
         });
     } catch (error: any) {
@@ -99,11 +88,11 @@ export default function Recipe({ recipeId, recipe }: Props) {
 
   const onRemoveFavorites = async () => {
     try {
-      await favoriteRemoveMutate.mutate(getRecipeId(uri));
+      await favoriteRemoveMutate.mutate(getRecipeId(recipeData?.uri));
       favoriteRemoveMutate.isSuccess &&
         showNotification({
           title: "Awh! 💔",
-          message: `${label} is now removed to your favorites`,
+          message: `${recipeData?.label} is now removed to your favorites`,
           color: "red",
         });
     } catch (error: any) {
@@ -118,6 +107,10 @@ export default function Recipe({ recipeId, recipe }: Props) {
   const favoriteMutateLoading =
     favoriteMutate.isLoading || favoriteRemoveMutate.isLoading;
 
+  if (isLoading) {
+    return <SkeletonCard />;
+  }
+
   return (
     <>
       <MainBreadcrumbs links={links} />
@@ -125,24 +118,29 @@ export default function Recipe({ recipeId, recipe }: Props) {
       <RecipeHeader
         isFavorite={isFavorite}
         onHandleFavoriteAction={onHandleFavoriteAction}
-        recipe={recipe}
+        recipe={recipeData}
         user={user}
         isLoading={favoriteMutateLoading}
       />
       <Space h='xl' />
       <Group align='start'>
-        <RecipeImage images={images} label={label} source={source} url={url} />
+        <RecipeImage
+          images={recipeData?.images}
+          label={recipeData?.label}
+          source={recipeData?.source}
+          url={recipeData?.url}
+        />
         <Stack mx='auto'>
           <RecipeStats
-            ingredientLines={ingredientLines}
-            calories={calories}
-            totalTime={totalTime}
-            totalWeight={totalWeight}
+            ingredientLines={recipeData?.ingredientLines}
+            calories={recipeData?.calories}
+            totalTime={recipeData?.totalTime}
+            totalWeight={recipeData?.totalWeight}
           />
           <RecipeDescriptionTypes
-            cuisineType={cuisineType}
-            dishType={dishType}
-            healthLabels={healthLabels}
+            cuisineType={recipeData?.cuisineType}
+            dishType={recipeData?.dishType}
+            healthLabels={recipeData?.healthLabels}
           />
         </Stack>
       </Group>
@@ -151,10 +149,10 @@ export default function Recipe({ recipeId, recipe }: Props) {
         breakpoints={[{ maxWidth: "md", cols: 1, spacing: "xl" }]}
         cols={2}
       >
-        <RecipeIngredients ingredientLines={ingredientLines} />
-        <RecipeNutritionFacts digest={digest} />
+        <RecipeIngredients ingredientLines={recipeData?.ingredientLines} />
+        <RecipeNutritionFacts digest={recipeData?.digest} />
       </SimpleGrid>
-      <RecipeSuggest label={label} />
+      <RecipeSuggest label={recipeData?.label} />
     </>
   );
 }
@@ -182,3 +180,14 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 };
+
+function SkeletonCard() {
+  return (
+    <>
+      <Skeleton height={100} width={100} mb='xl' />
+      <Skeleton height={8} radius='xl' />
+      <Skeleton height={8} mt={6} radius='xl' />
+      <Skeleton height={8} mt={6} width='70%' radius='xl' />
+    </>
+  );
+}

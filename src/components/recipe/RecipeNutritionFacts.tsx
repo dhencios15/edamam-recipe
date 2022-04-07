@@ -4,7 +4,7 @@ import { isEmpty } from "lodash";
 import React from "react";
 
 interface Props {
-  digest: DigestEnty[];
+  digest?: DigestEnty[];
 }
 
 export const RecipeNutritionFacts = ({ digest }: Props) => (
@@ -21,7 +21,7 @@ export const RecipeNutritionFacts = ({ digest }: Props) => (
       </Title>
       <List spacing='sm' withPadding listStyleType='none'>
         {!isEmpty(digest) &&
-          digest.map((facts, idx) => (
+          digest?.map((facts, idx) => (
             <List.Item key={idx}>
               <Grid>
                 <Grid.Col span={6}>
