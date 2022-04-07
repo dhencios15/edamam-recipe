@@ -138,7 +138,8 @@ export function MainNavbar() {
           </UnstyledButton>
         }
       >
-        <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item>
+        {/* TODO - ACCOUNT PAGE */}
+        {/* <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item> */}
         <Menu.Item onClick={logout} icon={<Logout size={14} />}>
           Logout
         </Menu.Item>

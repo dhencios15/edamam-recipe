@@ -114,8 +114,17 @@ export const SearchRecipe = () => {
         transition='pop-top-left'
         width={isMobile ? 300 : 600}
         target={
-          <Group align='center' position='center' spacing={5}>
-            <Group align='center' spacing='xs'>
+          <Group
+            sx={(th) => ({
+              [th.fn.smallerThan("sm")]: {
+                marginTop: 6,
+              },
+            })}
+            align='center'
+            position='center'
+            spacing={5}
+          >
+            <Group position='center' align='center' spacing='xs'>
               <Text weight={500} size='sm'>
                 REFINE SEARCH BY
               </Text>
