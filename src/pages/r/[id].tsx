@@ -3,19 +3,15 @@ import { GetServerSideProps } from "next";
 import {
   createStyles,
   Space,
-  Title,
   Group,
   Stack,
-  ActionIcon,
   SimpleGrid,
   Divider,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { isEmpty } from "lodash";
-import { FileDownload, Heart } from "tabler-icons-react";
 import dynamic from "next/dynamic";
 import { useModals } from "@mantine/modals";
-import { CSVLink } from "react-csv";
 
 import api from "@utils/api";
 import { fields } from "@utils/constant";
@@ -44,16 +40,6 @@ interface Props {
   recipeId: string;
   recipe: RecipeType & { digest: DigestEnty[] };
 }
-
-const useStyles = createStyles((th) => ({
-  image: {
-    overflow: "hidden",
-    maxHeight: 400,
-    maxWidth: 500,
-    backgroundColor: th.colors.gray[2],
-    paddingBottom: th.spacing.sm,
-  },
-}));
 
 export default function Recipe({ recipeId, recipe }: Props) {
   const meQuery = useGetMe();
