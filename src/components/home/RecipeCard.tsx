@@ -9,6 +9,7 @@ import {
   Box,
   ActionIcon,
   Center,
+  Tooltip,
 } from "@mantine/core";
 import { isEmpty } from "lodash";
 import Link from "next/link";
@@ -163,14 +164,21 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
               )}
             </Box>
           </Link>
-          <ActionIcon
+          <Tooltip
             sx={{ position: "absolute", left: 10, top: 10 }}
-            onClick={onHandleFavoriteAction}
-            color='red'
-            variant={isFavorite ? "filled" : "hover"}
+            label={
+              isFavorite ? "Remove to my favorite list" : "Add to favorite list"
+            }
+            withArrow
           >
-            <Heart size={20} />
-          </ActionIcon>
+            <ActionIcon
+              onClick={onHandleFavoriteAction}
+              color='red'
+              variant={isFavorite ? "filled" : "hover"}
+            >
+              <Heart size={20} />
+            </ActionIcon>
+          </Tooltip>
         </Box>
       </Card.Section>
 
