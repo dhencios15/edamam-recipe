@@ -13,6 +13,7 @@ import { apiPrisma } from "@utils/auth";
 import { useRouter } from "next/router";
 import { z } from "zod";
 import { useModals } from "@mantine/modals";
+import axios from "axios";
 
 const schema = z
   .object({
@@ -49,7 +50,16 @@ export const Signup = () => {
     const { email, name, password } = data;
     setIsLoading(true);
     try {
-      await apiPrisma.post("/signup", { email, name, password });
+      await axios.post(
+        "/api/signup",
+        { email, name, password },
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const location = router.pathname === "/auth" ? "/" : router.asPath;
       router.push(location);
       queryClient.invalidateQueries(["me"]);

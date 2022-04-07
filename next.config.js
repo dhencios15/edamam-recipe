@@ -5,8 +5,8 @@ const nextConfig = {
     domains: ["edamam-product-images.s3.amazonaws.com"],
   },
   env: {
-    APP_ID: "38895c39",
-    APP_KEYS: "336b85e58b5b8235d6eca788cbb1c48e",
+    APP_ID: "338fbe36",
+    APP_KEYS: "71b0be31e06ed9b486f4758f0a72949e",
   },
 };
 

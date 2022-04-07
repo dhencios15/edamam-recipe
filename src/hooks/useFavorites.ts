@@ -1,11 +1,18 @@
 import { useMutation, useQueryClient } from "react-query";
 import { apiPrisma } from "@utils/auth";
 import { FavoritCreateInput } from "@utils/types";
+import axios from "axios";
 
 export const useAddFavorites = () => {
   const queryClient = useQueryClient();
   return useMutation(
-    (data: FavoritCreateInput) => apiPrisma.post("/favorite", data),
+    (data: FavoritCreateInput) =>
+      axios.post("/api/favorite", data, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
     {
       onSuccess: () => queryClient.invalidateQueries(["me"]),
     }
@@ -15,7 +22,13 @@ export const useAddFavorites = () => {
 export const useRemoveFavorites = () => {
   const queryClient = useQueryClient();
   return useMutation(
-    (recipeId: string) => apiPrisma.delete(`/favorite/${recipeId}`),
+    (recipeId: string) =>
+      axios.delete(`/api/favorite/${recipeId}`, {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }),
     {
       onSuccess: () => queryClient.invalidateQueries(["me"]),
     }
