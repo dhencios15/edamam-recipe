@@ -39,7 +39,10 @@ export interface IMsg {
   message: string;
 }
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://eya-recipes.netlify.app"
+    : "http://localhost:3000";
 
 export default function Account() {
   const queryClient = useQueryClient();
@@ -65,7 +68,7 @@ export default function Account() {
 
   React.useEffect((): any => {
     // connect to socket server
-    const socket = io(`http://localhost:3000`, {
+    const socket = io(`${BASE_URL}`, {
       path: "/api/socketio",
     });
 
@@ -111,7 +114,7 @@ export default function Account() {
       <Tabs mt='lg'>
         <Tabs.Tab label='Messages' icon={<Message size={14} />}>
           <Grid>
-            <Grid.Col span={4}>
+            <Grid.Col md={12} lg={4}>
               <ScrollArea
                 mb='md'
                 sx={(th) => ({
@@ -128,7 +131,7 @@ export default function Account() {
                 />
               </ScrollArea>
             </Grid.Col>
-            <Grid.Col span={8}>
+            <Grid.Col md={12} lg={8}>
               {selectedChat ? (
                 <ScrollArea
                   mb='md'
@@ -166,6 +169,34 @@ export default function Account() {
                   <Text align='center'>No selected user to chat. 👤</Text>
                 </Paper>
               )}
+              {selectedChat && (
+                <Group position='right' align='center'>
+                  <Textarea
+                    ref={inputRef}
+                    size='md'
+                    value={msg}
+                    placeholder={
+                      connected ? "Type a message..." : "Connecting..."
+                    }
+                    disabled={!connected}
+                    sx={{ width: "100%", maxWidth: 300 }}
+                    onChange={(e) => setMsg(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        sendMessage();
+                      }
+                    }}
+                  />
+                  <Button
+                    rightIcon={<Send size={16} />}
+                    onClick={sendMessage}
+                    disabled={!connected}
+                    loading={sending}
+                  >
+                    {sending ? "SENDING..." : "SEND"}
+                  </Button>
+                </Group>
+              )}
             </Grid.Col>
           </Grid>
         </Tabs.Tab>
@@ -180,33 +211,6 @@ export default function Account() {
           </Tabs.Tab>
         )}
       </Tabs>
-
-      {selectedChat && (
-        <Group position='right' align='center'>
-          <Textarea
-            ref={inputRef}
-            size='md'
-            value={msg}
-            placeholder={connected ? "Type a message..." : "Connecting..."}
-            disabled={!connected}
-            sx={{ width: "100%", maxWidth: 300 }}
-            onChange={(e) => setMsg(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                sendMessage();
-              }
-            }}
-          />
-          <Button
-            rightIcon={<Send size={16} />}
-            onClick={sendMessage}
-            disabled={!connected}
-            loading={sending}
-          >
-            {sending ? "SENDING..." : "SEND"}
-          </Button>
-        </Group>
-      )}
     </>
   );
 }
