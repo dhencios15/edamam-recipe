@@ -12,6 +12,7 @@ import {
   Image,
   Avatar,
   Button,
+  Anchor,
 } from "@mantine/core";
 import { Logout, Settings, ChevronDown } from "tabler-icons-react";
 import Link from "next/link";
@@ -138,8 +139,15 @@ export function MainNavbar() {
           </UnstyledButton>
         }
       >
-        {/* TODO - ACCOUNT PAGE */}
-        {/* <Menu.Item icon={<Settings size={14} />}>Account</Menu.Item> */}
+        <Link href='/account' passHref>
+          <Menu.Item
+            sx={(th) => ({ ":hover": { backgroundColor: th.colors.gray[0] } })}
+            component='a'
+            icon={<Settings size={14} />}
+          >
+            Account
+          </Menu.Item>
+        </Link>
         <Menu.Item onClick={logout} icon={<Logout size={14} />}>
           Logout
         </Menu.Item>

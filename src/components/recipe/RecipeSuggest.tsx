@@ -9,6 +9,7 @@ import { selectSearch } from "@components/home/home.store/querySlice";
 import { RecipeCard } from "@components/home/RecipeCard";
 import { SkeletonCard } from "@components/home/SkeletonCard";
 import { useRecipies } from "@hooks/useRecipies";
+import { selectUsersFavorites } from "@redux-store/authSlice";
 
 interface Props {
   label?: string;
@@ -18,6 +19,7 @@ const getRandomInt = (max: number = 10) => Math.floor(Math.random() * max);
 
 export default function RecipeSuggest({ label }: Props) {
   const search = useAppSelector(selectSearch);
+  const favorites = useAppSelector(selectUsersFavorites);
   const recipiesQuery = useRecipies({ q: search });
   const randomNumber = getRandomInt();
 
@@ -51,7 +53,11 @@ export default function RecipeSuggest({ label }: Props) {
             ]}
           >
             {recepiesData.map(({ recipe }) => (
-              <RecipeCard key={getRecipeId(recipe.uri)} recipe={recipe} />
+              <RecipeCard
+                usersFavorites={favorites}
+                key={getRecipeId(recipe.uri)}
+                recipe={recipe}
+              />
             ))}
           </SimpleGrid>
         </>

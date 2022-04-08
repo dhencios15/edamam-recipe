@@ -25,7 +25,7 @@
 - [ ] - Create an admin feature.
     - [ ] - Get all users
     - [ ] - Search a user
-    - [ ] - Able to chat to a user
-    - [ ] - Use websocket for this.
-- [ ] - Users can also chat with the admin.
-- [ ] - Store chat data to the database and can be retrieved.
+    - [x] - Able to chat to a user
+    - [x] - Use websocket for this.
+- [x] - Users can also chat with the admin.
+- [x] - Store chat data to the database and can be retrieved.

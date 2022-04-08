@@ -21,6 +21,7 @@
     "axios": "^0.26.1",
     "bcrypt": "^5.0.1",
     "cookie": "^0.4.2",
+    "dayjs": "^1.11.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "next": "12.1.4",
@@ -31,6 +32,9 @@
     "react-intersection-observer": "^8.33.1",
     "react-query": "^3.34.19",
     "react-redux": "^7.2.8",
+    "redux-persist": "^6.0.0",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1",
     "tabler-icons-react": "^1.43.0",
     "zod": "^3.14.4"
   },

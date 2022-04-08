@@ -43,17 +43,18 @@ export const Signup = () => {
       password_confirm: "",
     },
   });
-  console.log(router);
+
   const [error, setError] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
   const onSignup = async (data: SignupFormType) => {
     const { email, name, password } = data;
+
     setIsLoading(true);
     try {
       await axios.post(
         "/api/signup",
-        { email, name, password },
+        { email, name, password, role: "ADMIN" },
         {
           withCredentials: true,
           headers: {

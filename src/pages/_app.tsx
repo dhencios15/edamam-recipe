@@ -8,8 +8,9 @@ import { ReactQueryDevtools } from "react-query/devtools";
 import { Provider } from "react-redux";
 import { ModalsProvider } from "@mantine/modals";
 import { NotificationsProvider } from "@mantine/notifications";
+import { PersistGate } from "redux-persist/integration/react";
 
-import { store } from "@redux-store/store";
+import { persistor, store } from "@redux-store/store";
 
 import { Layout } from "@components/Layout";
 import { AuthModal } from "@components/auth/modal/AuthModal";
@@ -104,9 +105,11 @@ export default function App(props: AppProps) {
           >
             <NotificationsProvider position='top-center' limit={5}>
               <Provider store={store}>
-                <Layout>
-                  <Component {...pageProps} />
-                </Layout>
+                <PersistGate loading={null} persistor={persistor}>
+                  <Layout>
+                    <Component {...pageProps} />
+                  </Layout>
+                </PersistGate>
               </Provider>
             </NotificationsProvider>
           </ModalsProvider>

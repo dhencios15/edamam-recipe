@@ -17,7 +17,6 @@ import { Clock, Heart } from "tabler-icons-react";
 
 import type { FavoritCreateInput, Recipe } from "@utils/types";
 import { getRecipeId, toSlug } from "@utils/formatter";
-import { useGetMe } from "@hooks/auth/useAuth";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { showNotification } from "@mantine/notifications";
 import { useModals } from "@mantine/modals";
@@ -112,13 +111,11 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
     };
     try {
       await favoriteMutate.mutateAsync(data);
-      !favoriteMutate.isLoading &&
-        favoriteMutate.isSuccess &&
-        showNotification({
-          title: "YEEY! 💖",
-          message: `${label} is now added to your favorites`,
-          color: "green",
-        });
+      showNotification({
+        title: "YEEY! 💖",
+        message: `${label} is now added to your favorites`,
+        color: "green",
+      });
     } catch (error: any) {
       modals.openContextModal("authmodal", {
         title: `Ops ⚠! You need to sign in to access this feature`,
@@ -131,12 +128,10 @@ export function RecipeCard({ recipe, usersFavorites }: BadgeCardProps) {
   const onRemoveFavorites = async () => {
     try {
       await favoriteRemoveMutate.mutate(getRecipeId(uri));
-      !favoriteRemoveMutate.isLoading &&
-        favoriteRemoveMutate.isSuccess &&
-        showNotification({
-          title: "Awh! 💔",
-          message: `${label} is now removed to your favorites`,
-        });
+      showNotification({
+        title: "Awh! 💔",
+        message: `${label} is now removed to your favorites`,
+      });
     } catch (error: any) {
       console.log(error);
     }

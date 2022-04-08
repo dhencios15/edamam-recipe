@@ -31,25 +31,3 @@ export const Pagination = React.forwardRef<Ref, Props>(
     );
   }
 );
-
-// export const Pagination = React.forwardRef({
-//   nextPage,
-//   hasNextPage = false,
-//   isFetching,
-// }: Props) => {
-//   return (
-//     <Center mt='xl'>
-//       <Group spacing='xs' direction='column' align='center'>
-//         <Button
-//           onClick={nextPage}
-//           disabled={!hasNextPage}
-//           loading={isFetching}
-//           rightIcon={<ArrowDown size={20} />}
-//           color='green'
-//         >
-//           {isFetching ? "FETCHING..." : "FETCH MORE"}
-//         </Button>
-//       </Group>
-//     </Center>
-//   );
-// };

@@ -14,7 +14,7 @@ import api from "@utils/api";
 import { fields } from "@utils/constant";
 import { getRecipeId } from "@utils/formatter";
 import type { Recipies as RecipiesType } from "@utils/types";
-import { selectUser } from "@redux-store/authSlice";
+import { selectUsersFavorites } from "@redux-store/authSlice";
 
 import { Pagination } from "./Pagination";
 import { SkeletonCard } from "./SkeletonCard";
@@ -25,17 +25,10 @@ const baseUrl = `https://api.edamam.com/api/recipes/v2?${fields.join("&")}`;
 export const Recipies = () => {
   const dispatch = useAppDispatch();
   const { ref, inView } = useInView();
-  const user = useAppSelector(selectUser);
+  const favorites = useAppSelector(selectUsersFavorites);
 
   const search = useAppSelector(selectSearch);
   const filters = useAppSelector(selectFilter);
-
-  const favorites = React.useMemo(() => {
-    if (Boolean(user)) {
-      return user?.favorites.map((favorite) => favorite.recipeId);
-    }
-    return [];
-  }, [user]);
 
   const infiniteQuery = useInfiniteQuery(
     ["recipies", search, filters],

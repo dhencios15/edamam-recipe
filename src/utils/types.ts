@@ -1,4 +1,7 @@
-import { Favorite } from "@prisma/client";
+import { Favorite, Message } from "@prisma/client";
+import { Server as NetServer, Socket } from "net";
+import { NextApiResponse } from "next";
+import { Server as SocketIOServer } from "socket.io";
 
 export type ImageSizeTypes = "THUMBNAIL" | "SMALL" | "REGULAR" | "LARGE";
 export type ImageInfo = {
@@ -62,3 +65,20 @@ export type FavoritCreateInput = Omit<
   Favorite,
   "id" | "User" | "createdAt" | "updatedAt"
 >;
+
+export type NextApiResponseServerIO = NextApiResponse & {
+  socket: Socket & {
+    server: NetServer & {
+      io: SocketIOServer;
+    };
+  };
+};
+
+type MessageReceiverOrSender = {
+  id: number;
+  name: string;
+};
+export type MessageWithReciever = Message & {
+  to: MessageReceiverOrSender;
+  from: MessageReceiverOrSender;
+};

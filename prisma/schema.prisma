@@ -19,6 +19,9 @@ model User {
 
   favorites Favorite[] @relation(references: [id])
 
+  messageSent     Message[] @relation("Sender")
+  messageRecieved Message[] @relation("Reciever")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
@@ -35,6 +38,19 @@ model Favorite {
   mealType        String
 
   User User[] @relation(references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Message {
+  id   Int    @id @default(autoincrement())
+  text String
+
+  from       User @relation("Sender", fields: [senderId], references: [id])
+  senderId   Int
+  to         User @relation("Reciever", fields: [receiverId], references: [id])
+  receiverId Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()

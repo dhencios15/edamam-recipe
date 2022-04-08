@@ -17,7 +17,7 @@ import { FavoritCreateInput } from "@utils/types";
 import { useAddFavorites, useRemoveFavorites } from "@hooks/useFavorites";
 import { getRecipeId } from "@utils/formatter";
 import { useAppSelector } from "@redux-store/hooks";
-import { selectUser } from "@redux-store/authSlice";
+import { selectUser, selectUsersFavorites } from "@redux-store/authSlice";
 
 import { MainBreadcrumbs } from "@components/MainBreadcrumbs";
 import { RecipeImage } from "@components/recipe/RecipeImage";
@@ -39,23 +39,17 @@ interface Props {
 
 export default function Recipe({ recipeId }: Props) {
   const user = useAppSelector(selectUser);
+  const favorites = useAppSelector(selectUsersFavorites);
   const router = useRouter();
   const { data: recipeData, isLoading, isError } = useRecipe(recipeId);
   const modals = useModals();
-
   const links = [
     { title: "Home", href: "/" },
     { title: recipeData?.recipe?.label || "", href: `/r/${recipeId}` },
   ];
-  console.log(recipeData?.recipe);
+
   const favoriteMutate = useAddFavorites();
   const favoriteRemoveMutate = useRemoveFavorites();
-  const favorites = React.useMemo(() => {
-    if (Boolean(user)) {
-      return user?.favorites.map((favorite) => favorite.recipeId);
-    }
-    return [];
-  }, [user]);
 
   const isFavorite = favorites?.includes(
     getRecipeId(recipeData?.recipe?.uri) || ""
@@ -76,12 +70,11 @@ export default function Recipe({ recipeId }: Props) {
     };
     try {
       await favoriteMutate.mutateAsync(data);
-      favoriteMutate.isSuccess &&
-        showNotification({
-          title: "YEEY! 💖",
-          message: `${recipeData?.recipe?.label} is now added to your favorites`,
-          color: "green",
-        });
+      showNotification({
+        title: "YEEY! 💖",
+        message: `${recipeData?.recipe?.label} is now added to your favorites`,
+        color: "green",
+      });
     } catch (error: any) {
       modals.openContextModal("authmodal", {
         title: `Ops ⚠! You need to sign in to access this feature`,
@@ -94,12 +87,11 @@ export default function Recipe({ recipeId }: Props) {
   const onRemoveFavorites = async () => {
     try {
       await favoriteRemoveMutate.mutate(getRecipeId(recipeData?.recipe?.uri));
-      favoriteRemoveMutate.isSuccess &&
-        showNotification({
-          title: "Awh! 💔",
-          message: `${recipeData?.recipe?.label} is now removed to your favorites`,
-          color: "red",
-        });
+      showNotification({
+        title: "Awh! 💔",
+        message: `${recipeData?.recipe?.label} is now removed to your favorites`,
+        color: "red",
+      });
     } catch (error: any) {
       console.log(error);
     }
@@ -117,7 +109,7 @@ export default function Recipe({ recipeId }: Props) {
   }
 
   if (isError) {
-    router.push("/_error");
+    router.push("/404");
   }
 
   return (
