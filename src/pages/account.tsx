@@ -1,11 +1,15 @@
 import React from "react";
 import { io } from "socket.io-client";
 import {
+  Badge,
   Button,
+  Card,
   Grid,
   Group,
+  Image,
   Paper,
   ScrollArea,
+  SimpleGrid,
   Skeleton,
   Stack,
   Tabs,
@@ -15,7 +19,7 @@ import {
 
 import { selectRole, selectUser } from "@redux-store/authSlice";
 import { useAppSelector } from "@redux-store/hooks";
-import { Message, Send, Users } from "tabler-icons-react";
+import { Heart, Message, Send, Trash, Users } from "tabler-icons-react";
 import { useChats, useSendMessage } from "@hooks/useChats";
 import { isEmpty } from "lodash";
 import { useQueryClient } from "react-query";
@@ -24,6 +28,11 @@ import { AccountMessage } from "@components/account/AccountMessage";
 import { AccountProfile } from "@components/account/AccountProfile";
 
 import { AccountUsers } from "@components/account/AccountUsers";
+import Link from "next/link";
+import { toSlug } from "@utils/formatter";
+import { useRemoveFavorites } from "@hooks/useFavorites";
+import { showNotification } from "@mantine/notifications";
+import { AccountUsersFavorites } from "@components/account/AccountUsersFavorites";
 
 export interface IMsg {
   receiverId: number;
@@ -162,7 +171,12 @@ export default function Account() {
         </Tabs.Tab>
         {role === "ADMIN" && (
           <Tabs.Tab label='Users' icon={<Users size={14} />}>
-            Messages tab content
+            {/* TODO DISPLAY & SEARCH USERS  */}
+          </Tabs.Tab>
+        )}
+        {role === "NORMAL" && (
+          <Tabs.Tab label='Favorites' icon={<Heart size={14} />}>
+            <AccountUsersFavorites user={user} />
           </Tabs.Tab>
         )}
       </Tabs>

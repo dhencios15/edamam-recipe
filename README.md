@@ -23,9 +23,20 @@
 - [x] - Add favorite functionality and add the data to your database and this data can be retrieved by the user. Users should also be able to unfavorite this item.
 - [x] - You can use third-party libraries for state management (e.g Redux) or use useContext.
 - [ ] - Create an admin feature.
-    - [ ] - Get all users
-    - [ ] - Search a user
     - [x] - Able to chat to a user
     - [x] - Use websocket for this.
+    - [ ] - Improve Chat UX
+    - [ ] - Chat Notification
+    - [ ] - Can send Images or use Richtext
+    - [ ] - Get all users
+    - [ ] - Search a user
+    - [ ] - Update User status
+    - [ ] - Improve UI/UX
 - [x] - Users can also chat with the admin.
+    - [ ] - User can view all favorites
 - [x] - Store chat data to the database and can be retrieved.
+
+- [ ] - Improve Performance
+    - [ ] - Database (change to nearest region)
+    - [ ] - Use GetStaticProps or GetServerSideProps
+    - [ ] - Clean up Codes
