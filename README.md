@@ -25,6 +25,7 @@
 - [ ] - Create an admin feature.
     - [x] - Able to chat to a user
     - [x] - Use websocket for this.
+    - [ ] - Paginate Chat (Infinite Scroll)
     - [ ] - Improve Chat UX
     - [ ] - Chat Notification
     - [ ] - Can send Images or use Richtext
@@ -37,6 +38,7 @@
 - [x] - Store chat data to the database and can be retrieved.
 
 - [ ] - Improve Performance
+    - [ ] - Apply SEO
     - [ ] - Database (change to nearest region)
     - [ ] - Use GetStaticProps or GetServerSideProps
     - [ ] - Clean up Codes
