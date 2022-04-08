@@ -54,7 +54,7 @@ export const Signup = () => {
     try {
       await axios.post(
         "/api/signup",
-        { email, name, password, role: "ADMIN" },
+        { email, name, password },
         {
           withCredentials: true,
           headers: {
